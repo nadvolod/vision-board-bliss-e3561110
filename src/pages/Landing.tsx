@@ -1,28 +1,33 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Link, Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
 const Landing: React.FC = () => {
   const { user } = useAuth();
   
-  // If user is already logged in, redirect to the main app
-  if (user) {
-    return <Navigate to="/app" />;
-  }
+  // Removed the redirect if user is logged in
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-vision-purple/10 to-vision-teal/10">
       <header className="container mx-auto py-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-vision-purple">Vision Board</h1>
         <div className="space-x-4">
-          <Link to="/auth">
-            <Button variant="outline">Login</Button>
-          </Link>
-          <Link to="/auth">
-            <Button className="bg-vision-purple hover:bg-vision-purple/90">Sign Up</Button>
-          </Link>
+          {user ? (
+            <Link to="/app">
+              <Button className="bg-vision-purple hover:bg-vision-purple/90">My Board</Button>
+            </Link>
+          ) : (
+            <>
+              <Link to="/auth">
+                <Button variant="outline">Login</Button>
+              </Link>
+              <Link to="/auth">
+                <Button className="bg-vision-purple hover:bg-vision-purple/90">Sign Up</Button>
+              </Link>
+            </>
+          )}
         </div>
       </header>
 
@@ -35,11 +40,19 @@ const Landing: React.FC = () => {
             <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto mb-8">
               Create your personal vision board to clarify, maintain focus, and stay excited about your life goals.
             </p>
-            <Link to="/auth">
-              <Button className="bg-vision-purple hover:bg-vision-purple/90 text-lg py-6 px-8">
-                Start Your Vision Board
-              </Button>
-            </Link>
+            {user ? (
+              <Link to="/app">
+                <Button className="bg-vision-purple hover:bg-vision-purple/90 text-lg py-6 px-8">
+                  Go to My Vision Board
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth">
+                <Button className="bg-vision-purple hover:bg-vision-purple/90 text-lg py-6 px-8">
+                  Start Your Vision Board
+                </Button>
+              </Link>
+            )}
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-16">
@@ -106,11 +119,19 @@ const Landing: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-vision-purple mb-4">Ready to transform your dreams into reality?</h2>
-            <Link to="/auth">
-              <Button className="bg-vision-purple hover:bg-vision-purple/90">
-                Create Your Vision Board Now
-              </Button>
-            </Link>
+            {user ? (
+              <Link to="/app">
+                <Button className="bg-vision-purple hover:bg-vision-purple/90">
+                  Go to My Vision Board
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth">
+                <Button className="bg-vision-purple hover:bg-vision-purple/90">
+                  Create Your Vision Board Now
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </footer>
