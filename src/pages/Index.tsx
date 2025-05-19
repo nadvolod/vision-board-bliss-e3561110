@@ -1,13 +1,30 @@
-// Update this page (the content is just a fallback if you fail to update the page)
 
-const Index = () => {
+import React, { useState } from 'react';
+import { GoalProvider } from '../context/GoalContext';
+import Header from '../components/Header';
+import VisionBoard from '../components/VisionBoard';
+import UploadModal from '../components/UploadModal';
+
+const Index: React.FC = () => {
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+
+  const openUploadModal = () => setIsUploadModalOpen(true);
+  const closeUploadModal = () => setIsUploadModalOpen(false);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <GoalProvider>
+      <div className="min-h-screen flex flex-col">
+        <Header openUploadModal={openUploadModal} />
+        <main className="flex-grow">
+          <VisionBoard />
+        </main>
+        
+        <UploadModal 
+          isOpen={isUploadModalOpen}
+          onClose={closeUploadModal}
+        />
       </div>
-    </div>
+    </GoalProvider>
   );
 };
 
