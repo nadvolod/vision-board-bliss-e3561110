@@ -9,7 +9,7 @@ const Landing: React.FC = () => {
   
   // If user is already logged in, redirect to the main app
   if (user) {
-    return <Navigate to="/" />;
+    return <Navigate to="/app" />;
   }
 
   return (
