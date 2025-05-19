@@ -38,9 +38,9 @@ const Auth = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
 
-  // If user is already logged in, redirect to home page
+  // If user is already logged in, redirect to app page
   if (user) {
-    return <Navigate to="/" />;
+    return <Navigate to="/app" />;
   }
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -56,7 +56,7 @@ const Auth = () => {
     try {
       if (activeTab === "login") {
         await signIn(values.email, values.password);
-        navigate("/");
+        navigate("/app");
       } else {
         await signUp(values.email, values.password);
         // Don't redirect after signup as they need to verify email

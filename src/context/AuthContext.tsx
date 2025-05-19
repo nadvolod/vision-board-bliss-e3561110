@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "../integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { toast as sonnerToast } from "sonner";
 
 interface AuthContextType {
   session: Session | null;
@@ -36,6 +37,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         setLoading(false);
+        
+        // Show notification when authentication state changes
+        if (event === 'SIGNED_IN') {
+          sonnerToast.success('Signed in successfully');
+        } else if (event === 'SIGNED_OUT') {
+          sonnerToast.info('Signed out');
+        } else if (event === 'USER_UPDATED') {
+          sonnerToast.success('User information updated');
+        }
       }
     );
 
@@ -69,9 +79,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const signUp = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      const { error, data } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth`,
+          data: {
+            email_confirmed: false,
+          },
+        }
       });
 
       if (error) throw error;
@@ -80,6 +96,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         title: "Sign up successful",
         description: "Please check your email for verification.",
       });
+      
+      sonnerToast.success(
+        "Verification email sent",
+        {
+          description: "Please check your email inbox to verify your account."
+        }
+      );
+      
+      console.log("Sign up data:", data);
     } catch (error: any) {
       toast({
         title: "Error signing up",
