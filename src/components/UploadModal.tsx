@@ -24,6 +24,7 @@ interface UploadModalProps {
 const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
   const { addGoal } = useGoals();
   const [description, setDescription] = useState('');
+  const [why, setWhy] = useState('');
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -55,12 +56,14 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
       addGoal({
         image: imagePreview,
         description: description.trim(),
+        why: why.trim() || undefined,
         deadline: date.toISOString(),
       });
       
       // Reset form
       setImagePreview(null);
       setDescription('');
+      setWhy('');
       setDate(new Date());
       setImageFile(null);
       setIsUploading(false);
@@ -108,6 +111,17 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
           </div>
           
           <div className="space-y-2">
+            <Label htmlFor="why">Why This Goal Matters</Label>
+            <Textarea
+              id="why"
+              placeholder="Why is this goal important to you?"
+              value={why}
+              onChange={(e) => setWhy(e.target.value)}
+              className="min-h-[100px]"
+            />
+          </div>
+          
+          <div className="space-y-2">
             <Label htmlFor="deadline">Target Date</Label>
             <Popover>
               <PopoverTrigger asChild>
@@ -128,7 +142,10 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
                   selected={date}
                   onSelect={setDate}
                   initialFocus
-                  className="p-3 pointer-events-auto"
+                  captionLayout="dropdown-buttons"
+                  fromYear={2000}
+                  toYear={2100}
+                  className={cn("p-3 pointer-events-auto")}
                 />
               </PopoverContent>
             </Popover>

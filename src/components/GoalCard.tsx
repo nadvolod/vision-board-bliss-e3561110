@@ -33,8 +33,15 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onClick }) => {
         />
       </div>
       <CardContent className="p-4 flex-grow flex flex-col justify-between">
-        <p className="text-sm line-clamp-2 mb-2">{goal.description}</p>
-        <div className="flex items-center text-xs text-muted-foreground">
+        <div>
+          <p className="text-sm line-clamp-2 mb-2">{goal.description}</p>
+          {goal.why && (
+            <p className="text-xs text-muted-foreground italic line-clamp-2 mt-1">
+              Why: {goal.why}
+            </p>
+          )}
+        </div>
+        <div className="flex items-center text-xs text-muted-foreground mt-2">
           <Calendar className="h-3 w-3 mr-1" />
           <span>{formatDate(goal.deadline)}</span>
         </div>
