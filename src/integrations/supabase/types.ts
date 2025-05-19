@@ -11,6 +11,8 @@ export type Database = {
     Tables: {
       user_goals: {
         Row: {
+          achieved: boolean
+          achieved_at: string | null
           created_at: string
           deadline: string
           description: string
@@ -20,6 +22,8 @@ export type Database = {
           why: string | null
         }
         Insert: {
+          achieved?: boolean
+          achieved_at?: string | null
           created_at?: string
           deadline: string
           description: string
@@ -29,6 +33,8 @@ export type Database = {
           why?: string | null
         }
         Update: {
+          achieved?: boolean
+          achieved_at?: string | null
           created_at?: string
           deadline?: string
           description?: string

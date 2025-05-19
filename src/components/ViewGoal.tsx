@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { format, parseISO } from 'date-fns';
 import { Goal } from '../types';
 import { useGoals } from '../context/GoalContext';
-import { ChevronLeft, ChevronRight, Calendar, Trash, Pencil } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Trash, Pencil, Check } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,9 +26,10 @@ interface ViewGoalProps {
 }
 
 const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }) => {
-  const { deleteGoal } = useGoals();
+  const { deleteGoal, markAsAchieved } = useGoals();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showAchieveConfirm, setShowAchieveConfirm] = useState(false);
   
   if (!goal) return null;
   
@@ -36,6 +37,11 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
     deleteGoal(goal.id);
     onClose();
     setShowDeleteConfirm(false);
+  };
+  
+  const handleAchieved = () => {
+    markAsAchieved(goal.id);
+    setShowAchieveConfirm(false);
   };
   
   const formatDate = (dateStr: string) => {
@@ -115,6 +121,20 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
                 <Calendar className="h-4 w-4 mr-2" />
                 <span>Target: {formatDate(goal.deadline)}</span>
               </div>
+              
+              {goal.achieved ? (
+                <div className="flex items-center mt-2 text-sm font-medium text-green-600">
+                  <Check className="h-4 w-4 mr-2" />
+                  <span>Achieved on: {formatDate(goal.achievedAt || '')}</span>
+                </div>
+              ) : (
+                <Button 
+                  onClick={() => setShowAchieveConfirm(true)}
+                  className="w-full mt-3 bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <Check className="mr-2 h-4 w-4" /> Mark as Achieved
+                </Button>
+              )}
             </div>
           </div>
         </DialogContent>
@@ -132,6 +152,23 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      
+      <AlertDialog open={showAchieveConfirm} onOpenChange={setShowAchieveConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Mark goal as achieved?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Congratulations on reaching your goal! Once marked as achieved, this goal will be moved to your achievements page.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleAchieved} className="bg-green-600 text-white hover:bg-green-700">
+              Mark as Achieved
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

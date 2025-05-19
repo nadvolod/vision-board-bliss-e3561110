@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { format, parseISO, isValid } from 'date-fns';
 import { Goal } from '../types';
-import { Calendar } from 'lucide-react';
+import { Calendar, CheckCircle2 } from 'lucide-react';
 
 interface GoalCardProps {
   goal: Goal;
@@ -31,6 +31,11 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onClick }) => {
           alt={goal.description}
           className="w-full h-full object-cover"
         />
+        {goal.achieved && (
+          <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
+            <CheckCircle2 className="h-4 w-4" />
+          </div>
+        )}
       </div>
       <CardContent className="p-4 flex-grow flex flex-col justify-between">
         <div>

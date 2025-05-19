@@ -6,6 +6,8 @@ export interface Goal {
   why?: string;
   deadline: string;
   createdAt: string;
+  achieved: boolean;
+  achievedAt?: string;
 }
 
 export interface UserGoal {
@@ -16,6 +18,8 @@ export interface UserGoal {
   why: string | null;
   deadline: string;
   created_at: string;
+  achieved: boolean;
+  achieved_at: string | null;
 }
 
 export interface AuthUser {
