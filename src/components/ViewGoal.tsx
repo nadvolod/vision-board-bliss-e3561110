@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { format, parseISO } from 'date-fns';
 import { Goal } from '../types';
 import { useGoals } from '../context/GoalContext';
-import { ChevronLeft, ChevronRight, Calendar, Trash } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Trash, Pencil } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import EditGoalModal from './EditGoalModal';
 
 interface ViewGoalProps {
   goal: Goal | null;
@@ -27,6 +28,7 @@ interface ViewGoalProps {
 const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }) => {
   const { deleteGoal } = useGoals();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   
   if (!goal) return null;
   
@@ -61,6 +63,15 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
               
               <div className="absolute top-2 right-2 flex gap-1">
                 <Button
+                  variant="secondary"
+                  size="icon"
+                  className="h-8 w-8 rounded-full"
+                  onClick={() => setShowEditModal(true)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                
+                <Button
                   variant="destructive"
                   size="icon"
                   className="h-8 w-8 rounded-full"
@@ -94,6 +105,12 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
             <div className="p-4 space-y-3">
               <p className="text-lg">{goal.description}</p>
               
+              {goal.why && (
+                <p className="text-sm text-muted-foreground italic">
+                  <strong>Why:</strong> {goal.why}
+                </p>
+              )}
+              
               <div className="flex items-center text-sm text-muted-foreground">
                 <Calendar className="h-4 w-4 mr-2" />
                 <span>Target: {formatDate(goal.deadline)}</span>
@@ -119,6 +136,14 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      
+      {goal && (
+        <EditGoalModal 
+          isOpen={showEditModal} 
+          onClose={() => setShowEditModal(false)} 
+          goal={goal}
+        />
+      )}
     </>
   );
 };
