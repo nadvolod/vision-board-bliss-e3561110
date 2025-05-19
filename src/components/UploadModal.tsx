@@ -73,7 +73,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto pb-6">
         <DialogHeader>
           <DialogTitle>Add New Vision</DialogTitle>
         </DialogHeader>
@@ -106,7 +106,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
-              className="min-h-[100px]"
+              className="min-h-[80px]"
             />
           </div>
           
@@ -117,7 +117,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
               placeholder="Why is this goal important to you?"
               value={why}
               onChange={(e) => setWhy(e.target.value)}
-              className="min-h-[100px]"
+              className="min-h-[80px]"
             />
           </div>
           
@@ -151,12 +151,11 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
             </Popover>
           </div>
           
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 pt-4 pb-2 sticky bottom-0 bg-background">
             <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
             <Button 
               type="submit" 
               disabled={isUploading || !imagePreview || !description.trim() || !date}
-              className="bg-vision-purple hover:bg-vision-purple/90"
             >
               {isUploading ? "Adding..." : "Add to Vision Board"}
             </Button>
