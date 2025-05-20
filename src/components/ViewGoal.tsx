@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { format, parseISO } from 'date-fns';
 import { Goal } from '../types';
 import { useGoals } from '../context/GoalContext';
-import { ChevronLeft, ChevronRight, Calendar, Trash, Pencil, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Trash, Pencil, Check, ImageIcon } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,7 +25,15 @@ interface ViewGoalProps {
   onPrevious: () => void;
 }
 
-const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=500&auto=format&fit=crop";
+// Array of default images to use as fallbacks
+const DEFAULT_IMAGES = [
+  "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=500&auto=format&fit=crop", // vision/goal generic
+  "https://images.unsplash.com/photo-1617912187990-804dd1618f8d?w=500&auto=format&fit=crop", // success/achievement
+  "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500&auto=format&fit=crop", // growth/development
+  "https://images.unsplash.com/photo-1521791055366-0d553872125f?w=500&auto=format&fit=crop", // career/professional
+  "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&auto=format&fit=crop", // travel/adventure
+  "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=500&auto=format&fit=crop", // financial freedom
+];
 
 const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }) => {
   const { deleteGoal, markAsAchieved } = useGoals();
@@ -56,6 +64,12 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
     }
   };
 
+  // Get a random default image from our array
+  const getRandomDefaultImage = () => {
+    const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGES.length);
+    return DEFAULT_IMAGES[randomIndex];
+  };
+
   const handleImageError = () => {
     setImageError(true);
   };
@@ -64,15 +78,31 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
     <>
       <Dialog open={!!goal} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto p-0">
+          <DialogHeader>
+            <DialogTitle className="sr-only">Goal Details</DialogTitle>
+          </DialogHeader>
           <div className="flex flex-col">
             <div className="relative">
               <div className="w-full flex justify-center bg-black/10 p-4">
-                <img
-                  src={imageError ? DEFAULT_IMAGE : goal.image}
-                  alt={goal.description}
-                  className="fullscreen-image"
-                  onError={handleImageError}
-                />
+                {!imageError ? (
+                  <img
+                    src={goal.image}
+                    alt={goal.description}
+                    className="fullscreen-image"
+                    onError={handleImageError}
+                  />
+                ) : (
+                  <img
+                    src={getRandomDefaultImage()}
+                    alt="Default vision image"
+                    className="fullscreen-image"
+                    onError={(e) => {
+                      // If even the fallback fails, show an icon placeholder
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                  />
+                )}
               </div>
               
               <div className="absolute top-2 right-2 flex gap-1">
