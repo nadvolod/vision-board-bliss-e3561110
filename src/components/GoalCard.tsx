@@ -22,7 +22,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onClick }) => {
 
   return (
     <Card
-      className="vision-card cursor-pointer overflow-hidden h-full flex flex-col"
+      className="vision-card cursor-pointer overflow-hidden h-full flex flex-col hover:shadow-md transition-all"
       onClick={onClick}
     >
       <div className="relative h-40 sm:h-48 overflow-hidden">
@@ -30,6 +30,11 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onClick }) => {
           src={goal.image}
           alt={goal.description}
           className="w-full h-full object-cover"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.onerror = null; // Prevent infinite loop
+            target.src = "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=500&auto=format&fit=crop";
+          }}
         />
         {goal.achieved && (
           <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">

@@ -14,12 +14,20 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, Image } from 'lucide-react';
 
 interface UploadModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const DEFAULT_IMAGES = [
+  "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=500&auto=format&fit=crop", // vision/goal generic
+  "https://images.unsplash.com/photo-1617912187990-804dd1618f8d?w=500&auto=format&fit=crop", // success/achievement
+  "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500&auto=format&fit=crop", // growth/development
+  "https://images.unsplash.com/photo-1521791055366-0d553872125f?w=500&auto=format&fit=crop", // career/professional
+  "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&auto=format&fit=crop", // travel/adventure
+];
 
 const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
   const { addGoal } = useGoals();
@@ -42,19 +50,26 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  const getRandomDefaultImage = () => {
+    const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGES.length);
+    return DEFAULT_IMAGES[randomIndex];
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!imagePreview || !date || !description.trim()) {
+    if (!description.trim() || !date) {
       return;
     }
     
     setIsUploading(true);
     
-    // In a real app, you might upload the image to a server here
+    // Use the uploaded image or a default one
+    const imageToUse = imagePreview || getRandomDefaultImage();
+    
     setTimeout(() => {
       addGoal({
-        image: imagePreview,
+        image: imageToUse,
         description: description.trim(),
         why: why.trim() || undefined,
         deadline: date.toISOString(),
@@ -79,21 +94,28 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="image">Upload Image</Label>
+            <Label htmlFor="image">Upload Image (Optional)</Label>
             <Input 
               id="image" 
               type="file" 
               accept="image/*"
               onChange={handleImageChange}
-              required
             />
-            {imagePreview && (
+            {imagePreview ? (
               <div className="mt-2 relative aspect-video">
                 <img 
                   src={imagePreview} 
                   alt="Preview" 
                   className="w-full h-40 object-cover rounded-md"
                 />
+              </div>
+            ) : (
+              <div className="mt-2 h-40 bg-gray-100 rounded-md flex items-center justify-center">
+                <div className="text-center text-gray-400">
+                  <Image className="mx-auto h-8 w-8 opacity-50" />
+                  <p className="text-sm mt-1">No image selected</p>
+                  <p className="text-xs">A default image will be used</p>
+                </div>
               </div>
             )}
           </div>
@@ -155,7 +177,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
             <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
             <Button 
               type="submit" 
-              disabled={isUploading || !imagePreview || !description.trim() || !date}
+              disabled={isUploading || !description.trim() || !date}
             >
               {isUploading ? "Adding..." : "Add to Vision Board"}
             </Button>

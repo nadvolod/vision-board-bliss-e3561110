@@ -25,11 +25,14 @@ interface ViewGoalProps {
   onPrevious: () => void;
 }
 
+const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=500&auto=format&fit=crop";
+
 const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }) => {
   const { deleteGoal, markAsAchieved } = useGoals();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAchieveConfirm, setShowAchieveConfirm] = useState(false);
+  const [imageError, setImageError] = useState(false);
   
   if (!goal) return null;
   
@@ -53,6 +56,10 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
     }
   };
 
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   return (
     <>
       <Dialog open={!!goal} onOpenChange={onClose}>
@@ -61,9 +68,10 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
             <div className="relative">
               <div className="w-full flex justify-center bg-black/10 p-4">
                 <img
-                  src={goal.image}
+                  src={imageError ? DEFAULT_IMAGE : goal.image}
                   alt={goal.description}
                   className="fullscreen-image"
+                  onError={handleImageError}
                 />
               </div>
               
