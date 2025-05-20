@@ -3,12 +3,24 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { 
+  Trophy, 
+  TrendingUp, 
+  Rocket, 
+  Star,
+  Sparkles
+} from 'lucide-react';
 
 const Landing: React.FC = () => {
   const { user } = useAuth();
   
-  // Removed the redirect if user is logged in
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-vision-purple/10 to-vision-teal/10">
       <header className="container mx-auto py-6 flex items-center justify-between">
@@ -31,9 +43,9 @@ const Landing: React.FC = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-16">
+      <main className="container mx-auto px-4 py-8">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-vision-purple to-vision-teal bg-clip-text text-transparent">
               Visualize Your Dreams, Achieve Your Goals
             </h2>
@@ -53,6 +65,75 @@ const Landing: React.FC = () => {
                 </Button>
               </Link>
             )}
+          </div>
+          
+          {/* New inspirational carousel section */}
+          <div className="my-16">
+            <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 text-vision-purple">
+              Success Stories <Sparkles className="inline-block ml-1 text-vision-yellow" />
+            </h3>
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full max-w-4xl mx-auto"
+            >
+              <CarouselContent>
+                {[
+                  {
+                    title: "Career Growth",
+                    description: "Landed my dream job after visualizing it for 6 months",
+                    image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=500&auto=format&fit=crop",
+                    icon: <TrendingUp className="text-vision-purple" />
+                  },
+                  {
+                    title: "Health Milestone",
+                    description: "Completed my first marathon after a year of focused training",
+                    image: "https://images.unsplash.com/photo-1527933053326-89d1746b76b9?w=500&auto=format&fit=crop",
+                    icon: <Trophy className="text-vision-yellow" />
+                  },
+                  {
+                    title: "Financial Freedom",
+                    description: "Paid off all debt and saved for my dream vacation",
+                    image: "https://images.unsplash.com/photo-1565514020179-026b92b2d95b?w=500&auto=format&fit=crop",
+                    icon: <Star className="text-vision-teal" />
+                  },
+                  {
+                    title: "Business Launch",
+                    description: "Started my own business after visualizing success daily",
+                    image: "https://images.unsplash.com/photo-1552664688-cf412ec27db2?w=500&auto=format&fit=crop",
+                    icon: <Rocket className="text-vision-pink" />
+                  }
+                ].map((story, idx) => (
+                  <CarouselItem key={idx} className="md:basis-1/2 lg:basis-1/3">
+                    <div className="bg-white rounded-xl overflow-hidden shadow-md h-full flex flex-col transition-all hover:shadow-lg">
+                      <div className="relative h-48 overflow-hidden">
+                        <img 
+                          src={story.image} 
+                          alt={story.title} 
+                          className="w-full h-full object-cover transition-transform hover:scale-105" 
+                        />
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/50 to-transparent"></div>
+                      </div>
+                      <div className="p-5 flex flex-col flex-grow">
+                        <div className="flex items-center mb-3">
+                          <div className="w-10 h-10 rounded-full bg-vision-purple/10 flex items-center justify-center mr-3">
+                            {story.icon}
+                          </div>
+                          <h4 className="font-bold text-lg">{story.title}</h4>
+                        </div>
+                        <p className="text-gray-600">{story.description}</p>
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="hidden md:block">
+                <CarouselPrevious className="left-1" />
+                <CarouselNext className="right-1" />
+              </div>
+            </Carousel>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-16">
