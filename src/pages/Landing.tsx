@@ -112,7 +112,12 @@ const Landing: React.FC = () => {
                         <img 
                           src={story.image} 
                           alt={story.title} 
-                          className="w-full h-full object-cover transition-transform hover:scale-105" 
+                          className="w-full h-full object-cover transition-transform hover:scale-105"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            // If the image fails to load, use a default image
+                            target.src = "https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?w=500&auto=format&fit=crop";
+                          }}
                         />
                         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/50 to-transparent"></div>
                       </div>

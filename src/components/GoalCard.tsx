@@ -17,7 +17,7 @@ const DEFAULT_IMAGES = [
   "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500&auto=format&fit=crop", // growth/development
   "https://images.unsplash.com/photo-1521791055366-0d553872125f?w=500&auto=format&fit=crop", // career/professional
   "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&auto=format&fit=crop", // travel/adventure
-  "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=500&auto=format&fit=crop", // financial freedom
+  "https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?w=500&auto=format&fit=crop", // financial freedom
 ];
 
 const GoalCard: React.FC<GoalCardProps> = ({ goal, onClick }) => {
