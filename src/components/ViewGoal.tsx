@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { format, parseISO } from 'date-fns';
 import { Goal } from '../types';
 import { useGoals } from '../context/GoalContext';
-import { ChevronLeft, ChevronRight, Calendar, Trash, Pencil, Check, ImageIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Trash, Pencil, Check, ImageIcon, X } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,7 +32,7 @@ const DEFAULT_IMAGES = [
   "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500&auto=format&fit=crop", // growth/development
   "https://images.unsplash.com/photo-1521791055366-0d553872125f?w=500&auto=format&fit=crop", // career/professional
   "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&auto=format&fit=crop", // travel/adventure
-  "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=500&auto=format&fit=crop", // financial freedom
+  "https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?w=500&auto=format&fit=crop", // financial freedom
 ];
 
 const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }) => {
@@ -80,6 +80,17 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto p-0">
           <DialogHeader>
             <DialogTitle className="sr-only">Goal Details</DialogTitle>
+            <div className="absolute top-2 right-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full hover:bg-muted"
+                onClick={onClose}
+                aria-label="Close"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </DialogHeader>
           <div className="flex flex-col">
             <div className="relative">
@@ -105,11 +116,11 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
                 )}
               </div>
               
-              <div className="absolute top-2 right-2 flex gap-1">
+              <div className="absolute bottom-2 right-2 flex gap-2">
                 <Button
                   variant="secondary"
                   size="icon"
-                  className="h-8 w-8 rounded-full"
+                  className="h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
                   onClick={() => setShowEditModal(true)}
                 >
                   <Pencil className="h-4 w-4" />
@@ -118,7 +129,7 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
                 <Button
                   variant="destructive"
                   size="icon"
-                  className="h-8 w-8 rounded-full"
+                  className="h-8 w-8 rounded-full bg-destructive/80 backdrop-blur-sm shadow-md"
                   onClick={() => setShowDeleteConfirm(true)}
                 >
                   <Trash className="h-4 w-4" />
