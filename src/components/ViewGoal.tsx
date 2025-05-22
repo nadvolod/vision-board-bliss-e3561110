@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -148,7 +149,7 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
                 </Button>
               </div>
               
-              {/* Close button in the top right */}
+              {/* Custom close button in the top right - replacing the default one */}
               <Button
                 onClick={onClose}
                 variant="ghost"
