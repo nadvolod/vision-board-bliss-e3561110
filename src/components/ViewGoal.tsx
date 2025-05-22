@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { format, parseISO } from 'date-fns';
 import { Goal } from '../types';
@@ -78,20 +77,11 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
     <>
       <Dialog open={!!goal} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto p-0">
-          <DialogHeader>
+          <DialogHeader className="p-0">
             <DialogTitle className="sr-only">Goal Details</DialogTitle>
-            <div className="absolute top-2 right-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-full hover:bg-muted"
-                onClick={onClose}
-                aria-label="Close"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+            <DialogDescription className="sr-only">View and manage your goal details</DialogDescription>
           </DialogHeader>
+          
           <div className="flex flex-col">
             <div className="relative">
               <div className="w-full flex justify-center bg-black/10 p-4">
@@ -116,11 +106,12 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
                 )}
               </div>
               
-              <div className="absolute bottom-2 right-2 flex gap-2">
+              {/* Action buttons in the bottom right */}
+              <div className="absolute bottom-4 right-4 flex gap-2">
                 <Button
                   variant="secondary"
                   size="icon"
-                  className="h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
+                  className="h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
                   onClick={() => setShowEditModal(true)}
                 >
                   <Pencil className="h-4 w-4" />
@@ -129,18 +120,19 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
                 <Button
                   variant="destructive"
                   size="icon"
-                  className="h-8 w-8 rounded-full bg-destructive/80 backdrop-blur-sm shadow-md"
+                  className="h-9 w-9 rounded-full bg-destructive/80 backdrop-blur-sm shadow-md"
                   onClick={() => setShowDeleteConfirm(true)}
                 >
                   <Trash className="h-4 w-4" />
                 </Button>
               </div>
               
-              <div className="absolute bottom-0 left-0 right-0 flex justify-between p-2">
+              {/* Navigation buttons at the bottom */}
+              <div className="absolute bottom-4 left-0 right-0 flex justify-between px-4">
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8 bg-background/80 backdrop-blur-sm"
+                  className="h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
                   onClick={onPrevious}
                 >
                   <ChevronLeft className="h-4 w-4" />
@@ -149,12 +141,23 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8 bg-background/80 backdrop-blur-sm"
+                  className="h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
                   onClick={onNext}
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
+              
+              {/* Close button in the top right */}
+              <Button
+                onClick={onClose}
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 transition-colors"
+                aria-label="Close dialog"
+              >
+                <X className="h-4 w-4" />
+              </Button>
             </div>
             
             <div className="p-4 space-y-3">
