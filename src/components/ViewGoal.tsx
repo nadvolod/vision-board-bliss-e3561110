@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -77,7 +76,7 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
   return (
     <>
       <Dialog open={!!goal} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto p-0">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto p-0" closeButton={false}>
           <DialogHeader className="p-0">
             <DialogTitle className="sr-only">Goal Details</DialogTitle>
             <DialogDescription className="sr-only">View and manage your goal details</DialogDescription>
@@ -149,7 +148,7 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
                 </Button>
               </div>
               
-              {/* Custom close button in the top right - replacing the default one */}
+              {/* Close button in the top right */}
               <Button
                 onClick={onClose}
                 variant="ghost"
