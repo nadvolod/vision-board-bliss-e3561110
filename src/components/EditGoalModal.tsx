@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +35,21 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
     }
   });
   const [isUpdating, setIsUpdating] = useState(false);
+
+  console.log('EditGoalModal render - isOpen:', isOpen, 'goal:', goal?.id);
+
+  // Reset form when goal changes
+  useEffect(() => {
+    if (goal) {
+      setDescription(goal.description);
+      setWhy(goal.why || '');
+      try {
+        setDate(parseISO(goal.deadline));
+      } catch {
+        setDate(new Date());
+      }
+    }
+  }, [goal]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
