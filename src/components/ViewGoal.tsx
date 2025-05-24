@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -52,6 +53,16 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
   const handleAchieved = () => {
     markAsAchieved(goal.id);
     setShowAchieveConfirm(false);
+  };
+
+  const handleEditClick = () => {
+    console.log('Edit button clicked for goal:', goal.id);
+    setShowEditModal(true);
+  };
+
+  const handleEditClose = () => {
+    console.log('Edit modal closing');
+    setShowEditModal(false);
   };
   
   const formatDate = (dateStr: string) => {
@@ -112,7 +123,7 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
                   variant="secondary"
                   size="icon"
                   className="h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
-                  onClick={() => setShowEditModal(true)}
+                  onClick={handleEditClick}
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
@@ -229,7 +240,7 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
       {goal && (
         <EditGoalModal 
           isOpen={showEditModal} 
-          onClose={() => setShowEditModal(false)} 
+          onClose={handleEditClose} 
           goal={goal}
         />
       )}
