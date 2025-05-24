@@ -20,27 +20,22 @@ import { Goal } from '../types';
 interface EditGoalModalProps {
   isOpen: boolean;
   onClose: () => void;
-  goal: Goal;
+  goal: Goal | null;
 }
 
 const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) => {
   const { updateGoal } = useGoals();
-  const [description, setDescription] = useState(goal.description);
-  const [why, setWhy] = useState(goal.why || '');
-  const [date, setDate] = useState<Date | undefined>(() => {
-    try {
-      return parseISO(goal.deadline);
-    } catch {
-      return new Date();
-    }
-  });
+  const [description, setDescription] = useState('');
+  const [why, setWhy] = useState('');
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const [isUpdating, setIsUpdating] = useState(false);
 
   console.log('EditGoalModal render - isOpen:', isOpen, 'goal:', goal?.id);
 
-  // Reset form when goal changes
+  // Reset form when goal changes or modal opens
   useEffect(() => {
-    if (goal) {
+    if (goal && isOpen) {
+      console.log('Resetting form with goal data:', goal);
       setDescription(goal.description);
       setWhy(goal.why || '');
       try {
@@ -49,7 +44,13 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
         setDate(new Date());
       }
     }
-  }, [goal]);
+  }, [goal, isOpen]);
+
+  // Don't render if no goal
+  if (!goal) {
+    console.log('EditGoalModal: No goal provided, not rendering');
+    return null;
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
