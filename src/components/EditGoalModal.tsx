@@ -46,16 +46,10 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
     }
   }, [goal, isOpen]);
 
-  // Don't render if no goal
-  if (!goal) {
-    console.log('EditGoalModal: No goal provided, not rendering');
-    return null;
-  }
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!date || !description.trim()) {
+    if (!goal || !date || !description.trim()) {
       return;
     }
     
@@ -74,77 +68,85 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
     }, 300);
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-md" style={{ zIndex: 60 }}>
         <DialogHeader>
           <DialogTitle>Edit Goal</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="edit-description">Goal Description</Label>
-            <Textarea
-              id="edit-description"
-              placeholder="Describe your vision..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              className="min-h-[100px]"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="edit-why">Why This Goal Matters</Label>
-            <Textarea
-              id="edit-why"
-              placeholder="Why is this goal important to you?"
-              value={why}
-              onChange={(e) => setWhy(e.target.value)}
-              className="min-h-[100px]"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="edit-deadline">Target Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="edit-deadline"
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  initialFocus
-                  captionLayout="dropdown-buttons"
-                  fromYear={2000}
-                  toYear={2100}
-                  className={cn("p-3 pointer-events-auto")}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-          
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-            <Button 
-              type="submit" 
-              disabled={isUpdating || !description.trim() || !date}
-            >
-              {isUpdating ? "Updating..." : "Update Goal"}
-            </Button>
-          </div>
-        </form>
+        {goal && (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-description">Goal Description</Label>
+              <Textarea
+                id="edit-description"
+                placeholder="Describe your vision..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                className="min-h-[100px]"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="edit-why">Why This Goal Matters</Label>
+              <Textarea
+                id="edit-why"
+                placeholder="Why is this goal important to you?"
+                value={why}
+                onChange={(e) => setWhy(e.target.value)}
+                className="min-h-[100px]"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="edit-deadline">Target Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="edit-deadline"
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                    captionLayout="dropdown-buttons"
+                    fromYear={2000}
+                    toYear={2100}
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            
+            <div className="flex justify-end gap-2 pt-2">
+              <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+              <Button 
+                type="submit" 
+                disabled={isUpdating || !description.trim() || !date}
+              >
+                {isUpdating ? "Updating..." : "Update Goal"}
+              </Button>
+            </div>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -36,13 +36,13 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
 
   const handleEditClick = () => {
     console.log('Edit button clicked for goal:', goal.id);
-    console.log('Current showEditModal state before:', showEditModal);
+    console.log('About to open edit modal');
     setShowEditModal(true);
-    console.log('Edit modal should now be opening...');
+    console.log('showEditModal set to true');
   };
 
   const handleEditClose = () => {
-    console.log('Edit modal closing');
+    console.log('Closing edit modal');
     setShowEditModal(false);
   };
 
@@ -85,13 +85,11 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
         onAchieve={handleAchieved}
       />
       
-      {showEditModal && (
-        <EditGoalModal 
-          isOpen={showEditModal} 
-          onClose={handleEditClose} 
-          goal={goal}
-        />
-      )}
+      <EditGoalModal 
+        isOpen={showEditModal} 
+        onClose={handleEditClose} 
+        goal={goal}
+      />
     </>
   );
 };
