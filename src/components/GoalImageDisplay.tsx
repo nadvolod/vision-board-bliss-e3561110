@@ -43,6 +43,11 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
     setImageError(true);
   };
 
+  const handleEditClick = () => {
+    console.log('Edit button clicked in GoalImageDisplay');
+    onEdit();
+  };
+
   return (
     <div className="relative">
       <div className="w-full flex justify-center bg-black/10 p-4">
@@ -67,48 +72,6 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
         )}
       </div>
       
-      {/* Action buttons in the bottom right */}
-      <div className="absolute bottom-4 right-4 flex gap-2">
-        <Button
-          variant="secondary"
-          size="icon"
-          className="h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
-          onClick={onEdit}
-        >
-          <Pencil className="h-4 w-4" />
-        </Button>
-        
-        <Button
-          variant="destructive"
-          size="icon"
-          className="h-9 w-9 rounded-full bg-destructive/80 backdrop-blur-sm shadow-md"
-          onClick={onDelete}
-        >
-          <Trash className="h-4 w-4" />
-        </Button>
-      </div>
-      
-      {/* Navigation buttons at the bottom */}
-      <div className="absolute bottom-4 left-0 right-0 flex justify-between px-4">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
-          onClick={onPrevious}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
-          onClick={onNext}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
-      
       {/* Close button in the top right */}
       <Button
         onClick={onClose}
@@ -119,6 +82,48 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
       >
         <X className="h-4 w-4" />
       </Button>
+      
+      {/* Navigation and action buttons at the bottom */}
+      <div className="absolute bottom-4 left-0 right-0 flex justify-between items-center px-4">
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
+          onClick={onPrevious}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        
+        {/* Center action buttons */}
+        <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            size="icon"
+            className="h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
+            onClick={handleEditClick}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+          
+          <Button
+            variant="destructive"
+            size="icon"
+            className="h-9 w-9 rounded-full bg-destructive/80 backdrop-blur-sm shadow-md"
+            onClick={onDelete}
+          >
+            <Trash className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
+          onClick={onNext}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 };
