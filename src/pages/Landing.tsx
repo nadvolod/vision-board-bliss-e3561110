@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -15,7 +14,8 @@ import {
   TrendingUp, 
   Rocket, 
   Star,
-  Sparkles
+  Sparkles,
+  ExternalLink
 } from 'lucide-react';
 
 const Landing: React.FC = () => {
@@ -218,6 +218,19 @@ const Landing: React.FC = () => {
                 </Button>
               </Link>
             )}
+            
+            {/* Built by UltimateQA link */}
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <a 
+                href="https://www.ultimateqa.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-gray-600 hover:text-vision-purple transition-colors"
+              >
+                Built by UltimateQA
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </div>
           </div>
         </div>
       </footer>
