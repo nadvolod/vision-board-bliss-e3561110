@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { format, parseISO, isValid } from 'date-fns';
 import { Goal } from '../types';
 import { Calendar, CheckCircle2, ImageIcon } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface GoalCardProps {
   goal: Goal;
@@ -22,6 +23,7 @@ const DEFAULT_IMAGES = [
 
 const GoalCard: React.FC<GoalCardProps> = ({ goal, onClick }) => {
   const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
   
   const formatDate = (dateStr: string) => {
     try {
@@ -41,6 +43,11 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onClick }) => {
   // Handle image error by setting state and allowing component to re-render
   const handleImageError = () => {
     setImageError(true);
+    setImageLoading(false);
+  };
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
   };
 
   return (
@@ -49,12 +56,19 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onClick }) => {
       onClick={onClick}
     >
       <div className="relative h-40 sm:h-48 overflow-hidden bg-gray-100">
+        {imageLoading && (
+          <Skeleton className="absolute inset-0 w-full h-full" />
+        )}
         {!imageError ? (
           <img
             src={goal.image}
             alt={goal.description}
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover transition-opacity duration-300 ${
+              imageLoading ? 'opacity-0' : 'opacity-100'
+            }`}
             onError={handleImageError}
+            onLoad={handleImageLoad}
+            loading="lazy"
           />
         ) : (
           // Fallback image when the original image fails to load
@@ -62,13 +76,18 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onClick }) => {
             <img
               src={getRandomDefaultImage()}
               alt="Default vision image"
-              className="w-full h-full object-cover"
+              className={`w-full h-full object-cover transition-opacity duration-300 ${
+                imageLoading ? 'opacity-0' : 'opacity-100'
+              }`}
               onError={(e) => {
                 // If even the fallback fails, show an icon placeholder
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
                 setImageError(true);
+                setImageLoading(false);
               }}
+              onLoad={handleImageLoad}
+              loading="lazy"
             />
           </div>
         )}

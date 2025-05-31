@@ -7,14 +7,29 @@ import { Goal } from '../types';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Trophy } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const VisionBoard: React.FC = () => {
   const { goals } = useGoals();
   const [selectedGoalIndex, setSelectedGoalIndex] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Filter out achieved goals for the main vision board
   const activeGoals = goals.filter(goal => !goal.achieved);
   const hasAchievedGoals = goals.some(goal => goal.achieved);
+  
+  // Set loading to false when goals are loaded
+  React.useEffect(() => {
+    if (goals.length > 0) {
+      setIsLoading(false);
+    } else {
+      // Add a timeout to handle the case where there are no goals
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [goals]);
   
   const handleGoalClick = (index: number) => {
     setSelectedGoalIndex(index);
@@ -38,6 +53,30 @@ const VisionBoard: React.FC = () => {
     selectedGoalIndex !== null && activeGoals[selectedGoalIndex] 
       ? activeGoals[selectedGoalIndex] 
       : null;
+
+  // Show loading skeletons while goals are being fetched
+  if (isLoading) {
+    return (
+      <>
+        <div className="flex justify-between items-center px-4 py-2">
+          <h2 className="text-lg font-medium">My Current Goals</h2>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div key={index} className="h-full flex flex-col">
+              <Skeleton className="h-40 sm:h-48 w-full rounded-t-lg" />
+              <div className="p-4 border border-t-0 rounded-b-lg">
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-3 w-3/4 mb-2" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

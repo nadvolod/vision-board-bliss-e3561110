@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect, ReactNode } from "react";
 import { Goal, UserGoal } from "../types";
 import { useToast } from "@/components/ui/use-toast";
@@ -7,6 +6,7 @@ import { useAuth } from "./AuthContext";
 
 interface GoalContextType {
   goals: Goal[];
+  isLoading: boolean;
   addGoal: (goal: Omit<Goal, "id" | "createdAt" | "achieved" | "achievedAt">) => Promise<void>;
   deleteGoal: (id: string) => Promise<void>;
   updateGoal: (goal: Goal) => Promise<void>;
@@ -26,15 +26,22 @@ export const useGoals = () => {
 
 export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [goals, setGoals] = useState<Goal[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const { user } = useAuth();
 
   // Load goals from Supabase when user changes
   useEffect(() => {
     const fetchGoals = async () => {
-      if (!user) return;
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
 
       try {
+        setIsLoading(true);
+        console.log("Fetching goals for user:", user.id);
+        
         const { data, error } = await supabase
           .from("user_goals")
           .select("*")
@@ -45,6 +52,7 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
 
         if (data) {
+          console.log("Goals fetched:", data.length);
           // Convert from UserGoal to Goal format
           const formattedGoals: Goal[] = data.map((item: UserGoal) => ({
             id: item.id,
@@ -65,6 +73,8 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           description: error.message,
           variant: "destructive",
         });
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -233,6 +243,7 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const value = {
     goals,
+    isLoading,
     addGoal,
     deleteGoal,
     updateGoal,
