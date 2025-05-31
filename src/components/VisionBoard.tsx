@@ -10,26 +10,12 @@ import { Trophy } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const VisionBoard: React.FC = () => {
-  const { goals } = useGoals();
+  const { goals, isLoading } = useGoals();
   const [selectedGoalIndex, setSelectedGoalIndex] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   
   // Filter out achieved goals for the main vision board
   const activeGoals = goals.filter(goal => !goal.achieved);
   const hasAchievedGoals = goals.some(goal => goal.achieved);
-  
-  // Set loading to false when goals are loaded
-  React.useEffect(() => {
-    if (goals.length > 0) {
-      setIsLoading(false);
-    } else {
-      // Add a timeout to handle the case where there are no goals
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [goals]);
   
   const handleGoalClick = (index: number) => {
     setSelectedGoalIndex(index);

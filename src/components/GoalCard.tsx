@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { format, parseISO, isValid } from 'date-fns';
 import { Goal } from '../types';
-import { Calendar, CheckCircle2, ImageIcon } from 'lucide-react';
+import { Calendar, CheckCircle2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface GoalCardProps {
@@ -34,13 +34,12 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onClick }) => {
     }
   };
 
-  // Get a random default image from our array
-  const getRandomDefaultImage = () => {
-    const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGES.length);
-    return DEFAULT_IMAGES[randomIndex];
+  // Get a consistent default image based on goal id to avoid flickering
+  const getDefaultImage = () => {
+    const index = goal.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % DEFAULT_IMAGES.length;
+    return DEFAULT_IMAGES[index];
   };
 
-  // Handle image error by setting state and allowing component to re-render
   const handleImageError = () => {
     setImageError(true);
     setImageLoading(false);
@@ -63,7 +62,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onClick }) => {
           <img
             src={goal.image}
             alt={goal.description}
-            className={`w-full h-full object-cover transition-opacity duration-300 ${
+            className={`w-full h-full object-cover transition-opacity duration-200 ${
               imageLoading ? 'opacity-0' : 'opacity-100'
             }`}
             onError={handleImageError}
@@ -71,25 +70,19 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onClick }) => {
             loading="lazy"
           />
         ) : (
-          // Fallback image when the original image fails to load
-          <div className="h-full w-full flex flex-col items-center justify-center">
-            <img
-              src={getRandomDefaultImage()}
-              alt="Default vision image"
-              className={`w-full h-full object-cover transition-opacity duration-300 ${
-                imageLoading ? 'opacity-0' : 'opacity-100'
-              }`}
-              onError={(e) => {
-                // If even the fallback fails, show an icon placeholder
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                setImageError(true);
-                setImageLoading(false);
-              }}
-              onLoad={handleImageLoad}
-              loading="lazy"
-            />
-          </div>
+          <img
+            src={getDefaultImage()}
+            alt="Default vision image"
+            className={`w-full h-full object-cover transition-opacity duration-200 ${
+              imageLoading ? 'opacity-0' : 'opacity-100'
+            }`}
+            onError={() => {
+              // Ultimate fallback - this shouldn't happen with Unsplash URLs
+              setImageLoading(false);
+            }}
+            onLoad={handleImageLoad}
+            loading="lazy"
+          />
         )}
         {goal.achieved && (
           <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">

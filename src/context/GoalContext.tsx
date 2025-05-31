@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect, ReactNode } from "react";
 import { Goal, UserGoal } from "../types";
 import { useToast } from "@/components/ui/use-toast";
@@ -34,12 +35,12 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const fetchGoals = async () => {
       if (!user) {
+        setGoals([]);
         setIsLoading(false);
         return;
       }
 
       try {
-        setIsLoading(true);
         console.log("Fetching goals for user:", user.id);
         
         const { data, error } = await supabase
