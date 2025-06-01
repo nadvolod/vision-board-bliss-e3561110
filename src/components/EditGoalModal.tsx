@@ -76,7 +76,7 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md" style={{ zIndex: 60 }}>
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto" style={{ zIndex: 60 }}>
         <DialogHeader>
           <DialogTitle>Edit Goal</DialogTitle>
         </DialogHeader>
@@ -121,7 +121,15 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
                     {date ? format(date, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent 
+                  className="w-auto p-0" 
+                  align="center"
+                  side="bottom"
+                  sideOffset={8}
+                  avoidCollisions={true}
+                  collisionPadding={16}
+                  style={{ zIndex: 70 }}
+                >
                   <Calendar
                     mode="single"
                     selected={date}
