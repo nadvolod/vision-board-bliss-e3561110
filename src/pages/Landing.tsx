@@ -17,6 +17,7 @@ import {
   Sparkles,
   ExternalLink
 } from 'lucide-react';
+import AchievementCounter from '@/components/AchievementCounter';
 
 const Landing: React.FC = () => {
   const { user } = useAuth();
@@ -65,6 +66,11 @@ const Landing: React.FC = () => {
                 </Button>
               </Link>
             )}
+          </div>
+          
+          {/* Add the achievement counter */}
+          <div className="flex justify-center mb-16">
+            <AchievementCounter />
           </div>
           
           {/* New inspirational carousel section */}
