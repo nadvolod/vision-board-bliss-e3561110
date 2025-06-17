@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { format, parseISO } from 'date-fns';
-import { useGoals } from '@/context/GoalContext';
+import { useOptimizedGoalContext } from '@/context/OptimizedGoalContext';
 import {
   Popover,
   PopoverContent,
@@ -24,7 +24,7 @@ interface EditGoalModalProps {
 }
 
 const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) => {
-  const { updateGoal } = useGoals();
+  const { updateGoal } = useOptimizedGoalContext();
   const [description, setDescription] = useState('');
   const [why, setWhy] = useState('');
   const [date, setDate] = useState<Date | undefined>(new Date());
