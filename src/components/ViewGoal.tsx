@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Goal } from '../types';
-import { useGoals } from '../context/GoalContext';
+import { useOptimizedGoalContext } from '../context/OptimizedGoalContext';
 import EditGoalModal from './EditGoalModal';
 import GoalImageDisplay from './GoalImageDisplay';
 import GoalDetails from './GoalDetails';
@@ -16,7 +16,7 @@ interface ViewGoalProps {
 }
 
 const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }) => {
-  const { deleteGoal, markAsAchieved } = useGoals();
+  const { deleteGoal, markAsAchieved } = useOptimizedGoalContext();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAchieveConfirm, setShowAchieveConfirm] = useState(false);
