@@ -161,13 +161,22 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
     return goals.filter(goal => goal.achieved);
   };
 
+  // Wrap mutation functions to return void as expected by the interface
   const value = {
     goals,
     isLoading,
-    addGoal: addGoalMutation.mutateAsync,
-    deleteGoal: deleteGoalMutation.mutateAsync,
-    updateGoal: updateGoalMutation.mutateAsync,
-    markAsAchieved: markAsAchievedMutation.mutateAsync,
+    addGoal: async (goal: Omit<Goal, "id" | "createdAt" | "achieved" | "achievedAt">) => {
+      await addGoalMutation.mutateAsync(goal);
+    },
+    deleteGoal: async (id: string) => {
+      await deleteGoalMutation.mutateAsync(id);
+    },
+    updateGoal: async (goal: Goal) => {
+      await updateGoalMutation.mutateAsync(goal);
+    },
+    markAsAchieved: async (id: string) => {
+      await markAsAchievedMutation.mutateAsync(id);
+    },
     getAchievedGoals,
   };
 
