@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { useGoals } from '@/context/GoalContext';
+import { useOptimizedGoalContext } from '@/context/OptimizedGoalContext';
 import {
   Popover,
   PopoverContent,
@@ -30,7 +29,7 @@ const DEFAULT_IMAGES = [
 ];
 
 const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
-  const { addGoal } = useGoals();
+  const { addGoal } = useOptimizedGoalContext();
   const [description, setDescription] = useState('');
   const [why, setWhy] = useState('');
   const [date, setDate] = useState<Date | undefined>(new Date());
