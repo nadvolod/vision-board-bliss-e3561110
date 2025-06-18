@@ -49,20 +49,21 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
   };
 
   return (
-    <div className="relative">
-      <div className="w-full flex justify-center bg-black/10 p-4">
+    <div className="flex flex-col">
+      {/* Image container - full height with no padding */}
+      <div className="relative w-full h-[80vh] bg-black flex justify-center items-center overflow-hidden">
         {!imageError ? (
           <img
             src={image}
             alt={description}
-            className="fullscreen-image"
+            className="w-full h-full object-cover"
             onError={handleImageError}
           />
         ) : (
           <img
             src={getRandomDefaultImage()}
             alt="Default vision image"
-            className="fullscreen-image"
+            className="w-full h-full object-cover"
             onError={(e) => {
               // If even the fallback fails, show an icon placeholder
               const target = e.target as HTMLImageElement;
@@ -70,25 +71,25 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
             }}
           />
         )}
+        
+        {/* Close button in the top right */}
+        <Button
+          onClick={onClose}
+          variant="ghost"
+          size="icon"
+          className="absolute top-4 right-4 h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 transition-colors"
+          aria-label="Close dialog"
+        >
+          <X className="h-4 w-4" />
+        </Button>
       </div>
       
-      {/* Close button in the top right */}
-      <Button
-        onClick={onClose}
-        variant="ghost"
-        size="icon"
-        className="absolute top-2 right-2 h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 transition-colors"
-        aria-label="Close dialog"
-      >
-        <X className="h-4 w-4" />
-      </Button>
-      
-      {/* Navigation and action buttons at the bottom */}
-      <div className="absolute bottom-4 left-0 right-0 flex justify-between items-center px-4">
+      {/* Navigation and action buttons below the image */}
+      <div className="flex justify-between items-center p-4 bg-background border-t">
         <Button
           variant="outline"
           size="icon"
-          className="h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
+          className="h-9 w-9 rounded-full"
           onClick={onPrevious}
         >
           <ChevronLeft className="h-4 w-4" />
@@ -99,7 +100,7 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
           <Button
             variant="secondary"
             size="icon"
-            className="h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
+            className="h-9 w-9 rounded-full"
             onClick={handleEditClick}
           >
             <Pencil className="h-4 w-4" />
@@ -108,7 +109,7 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
           <Button
             variant="destructive"
             size="icon"
-            className="h-9 w-9 rounded-full bg-destructive/80 backdrop-blur-sm shadow-md"
+            className="h-9 w-9 rounded-full"
             onClick={onDelete}
           >
             <Trash className="h-4 w-4" />
@@ -118,7 +119,7 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
         <Button
           variant="outline"
           size="icon"
-          className="h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm shadow-md"
+          className="h-9 w-9 rounded-full"
           onClick={onNext}
         >
           <ChevronRight className="h-4 w-4" />

@@ -58,7 +58,3 @@
 .modal-backdrop {
   @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-40;
 }
-
-.fullscreen-image {
-  @apply max-h-[70vh] w-auto max-w-full object-contain rounded-lg;
-}
