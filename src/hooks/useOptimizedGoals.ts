@@ -10,25 +10,43 @@ export const useOptimizedGoals = () => {
   return useQuery({
     queryKey: ['goals', user?.id],
     queryFn: async (): Promise<Goal[]> => {
-      if (!user) return [];
+      console.log('useOptimizedGoals: Fetching goals for user:', user?.id);
+      
+      if (!user) {
+        console.log('useOptimizedGoals: No user, returning empty array');
+        return [];
+      }
 
-      const { data, error } = await supabase
-        .from('user_goals')
-        .select('*')
-        .order('created_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('user_goals')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-      if (error) throw error;
+        if (error) {
+          console.error('useOptimizedGoals: Supabase error:', error);
+          throw error;
+        }
 
-      return data?.map((item: UserGoal) => ({
-        id: item.id,
-        image: item.image,
-        description: item.description,
-        why: item.why || undefined,
-        deadline: item.deadline,
-        createdAt: item.created_at,
-        achieved: item.achieved,
-        achievedAt: item.achieved_at || undefined,
-      })) || [];
+        console.log('useOptimizedGoals: Raw data from Supabase:', data?.length || 0, 'items');
+
+        const mappedData = data?.map((item: UserGoal) => ({
+          id: item.id,
+          image: item.image,
+          description: item.description,
+          why: item.why || undefined,
+          deadline: item.deadline,
+          createdAt: item.created_at,
+          achieved: item.achieved,
+          achievedAt: item.achieved_at || undefined,
+        })) || [];
+
+        console.log('useOptimizedGoals: Mapped goals:', mappedData.length, 'items');
+        return mappedData;
+      } catch (error) {
+        console.error('useOptimizedGoals: Error in queryFn:', error);
+        throw error;
+      }
     },
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -37,3 +55,4 @@ export const useOptimizedGoals = () => {
     refetchOnMount: false,
   });
 };
+

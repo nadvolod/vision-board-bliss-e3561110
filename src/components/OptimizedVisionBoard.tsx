@@ -20,40 +20,54 @@ const FastSkeleton = () => (
 );
 
 const OptimizedVisionBoard: React.FC = () => {
+  console.log('OptimizedVisionBoard: Component rendering');
+  
   const { data: goals = [], isLoading } = useOptimizedGoals();
   const [selectedGoalIndex, setSelectedGoalIndex] = useState<number | null>(null);
+  
+  console.log('OptimizedVisionBoard: Goals data:', goals.length, 'isLoading:', isLoading);
   
   const { activeGoals, hasAchievedGoals } = useMemo(() => {
     const active = goals.filter(goal => !goal.achieved);
     const hasAchieved = goals.some(goal => goal.achieved);
+    console.log('OptimizedVisionBoard: Active goals:', active.length, 'Has achieved:', hasAchieved);
     return { activeGoals: active, hasAchievedGoals: hasAchieved };
   }, [goals]);
   
   const handleGoalClick = useCallback((index: number) => {
+    console.log('OptimizedVisionBoard: Goal clicked at index:', index);
     setSelectedGoalIndex(index);
   }, []);
   
   const handleCloseViewer = useCallback(() => {
+    console.log('OptimizedVisionBoard: Closing viewer');
     setSelectedGoalIndex(null);
   }, []);
   
   const handleNextGoal = useCallback(() => {
     if (selectedGoalIndex === null || activeGoals.length === 0) return;
-    setSelectedGoalIndex((selectedGoalIndex + 1) % activeGoals.length);
+    const nextIndex = (selectedGoalIndex + 1) % activeGoals.length;
+    console.log('OptimizedVisionBoard: Next goal, index:', nextIndex);
+    setSelectedGoalIndex(nextIndex);
   }, [selectedGoalIndex, activeGoals.length]);
   
   const handlePreviousGoal = useCallback(() => {
     if (selectedGoalIndex === null || activeGoals.length === 0) return;
-    setSelectedGoalIndex((selectedGoalIndex - 1 + activeGoals.length) % activeGoals.length);
+    const prevIndex = (selectedGoalIndex - 1 + activeGoals.length) % activeGoals.length;
+    console.log('OptimizedVisionBoard: Previous goal, index:', prevIndex);
+    setSelectedGoalIndex(prevIndex);
   }, [selectedGoalIndex, activeGoals.length]);
   
-  const selectedGoal: Goal | null = useMemo(() => 
-    selectedGoalIndex !== null && activeGoals[selectedGoalIndex] 
+  const selectedGoal: Goal | null = useMemo(() => {
+    const goal = selectedGoalIndex !== null && activeGoals[selectedGoalIndex] 
       ? activeGoals[selectedGoalIndex] 
-      : null
-  , [selectedGoalIndex, activeGoals]);
+      : null;
+    console.log('OptimizedVisionBoard: Selected goal:', goal?.id || 'none');
+    return goal;
+  }, [selectedGoalIndex, activeGoals]);
 
   if (isLoading) {
+    console.log('OptimizedVisionBoard: Showing loading state');
     return (
       <>
         <div className="flex justify-between items-center px-4 py-2">
@@ -68,6 +82,8 @@ const OptimizedVisionBoard: React.FC = () => {
       </>
     );
   }
+
+  console.log('OptimizedVisionBoard: Rendering main content');
 
   return (
     <>
@@ -129,3 +145,4 @@ const OptimizedVisionBoard: React.FC = () => {
 };
 
 export default OptimizedVisionBoard;
+
