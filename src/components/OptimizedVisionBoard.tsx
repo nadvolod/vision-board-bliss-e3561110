@@ -22,17 +22,24 @@ const FastSkeleton = () => (
 const OptimizedVisionBoard: React.FC = () => {
   console.log('OptimizedVisionBoard: Component rendering');
   
-  const { data: goals = [], isLoading } = useOptimizedGoals();
+  const { data: goals, isLoading, error } = useOptimizedGoals();
   const [selectedGoalIndex, setSelectedGoalIndex] = useState<number | null>(null);
   
-  console.log('OptimizedVisionBoard: Goals data:', goals.length, 'isLoading:', isLoading);
+  // Ensure goals is always an array, even during loading
+  const safeGoals = goals || [];
+  
+  console.log('OptimizedVisionBoard: Goals data:', safeGoals.length, 'isLoading:', isLoading, 'error:', error);
   
   const { activeGoals, hasAchievedGoals } = useMemo(() => {
-    const active = goals.filter(goal => !goal.achieved);
-    const hasAchieved = goals.some(goal => goal.achieved);
+    if (!safeGoals || safeGoals.length === 0) {
+      return { activeGoals: [], hasAchievedGoals: false };
+    }
+    
+    const active = safeGoals.filter(goal => !goal.achieved);
+    const hasAchieved = safeGoals.some(goal => goal.achieved);
     console.log('OptimizedVisionBoard: Active goals:', active.length, 'Has achieved:', hasAchieved);
     return { activeGoals: active, hasAchievedGoals: hasAchieved };
-  }, [goals]);
+  }, [safeGoals]);
   
   const handleGoalClick = useCallback((index: number) => {
     console.log('OptimizedVisionBoard: Goal clicked at index:', index);
@@ -66,7 +73,23 @@ const OptimizedVisionBoard: React.FC = () => {
     return goal;
   }, [selectedGoalIndex, activeGoals]);
 
-  if (isLoading) {
+  // Handle error state
+  if (error) {
+    console.error('OptimizedVisionBoard: Error loading goals:', error);
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh]">
+        <div className="text-center max-w-md">
+          <h2 className="text-2xl font-bold mb-2 text-red-600">Error Loading Goals</h2>
+          <p className="text-muted-foreground mb-4">
+            There was a problem loading your vision board. Please try refreshing the page.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle loading state
+  if (isLoading || !goals) {
     console.log('OptimizedVisionBoard: Showing loading state');
     return (
       <>
@@ -145,4 +168,3 @@ const OptimizedVisionBoard: React.FC = () => {
 };
 
 export default OptimizedVisionBoard;
-
