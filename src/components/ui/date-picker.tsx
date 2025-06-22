@@ -1,7 +1,7 @@
 
 import * as React from "react";
-import { format, addDays, addWeeks, addMonths, addYears, startOfToday } from "date-fns";
-import { Calendar as CalendarIcon, Clock } from "lucide-react";
+import { format, addDays, addWeeks, addMonths, addYears, startOfToday, startOfWeek, startOfMonth, startOfYear, subWeeks, subMonths, subYears } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -24,16 +24,20 @@ const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
     const [isOpen, setIsOpen] = React.useState(false);
     const today = startOfToday();
 
-    const quickPresets = [
-      { label: "Today", value: today },
-      { label: "Tomorrow", value: addDays(today, 1) },
-      { label: "Next Week", value: addWeeks(today, 1) },
-      { label: "Next Month", value: addMonths(today, 1) },
-      { label: "Next Year", value: addYears(today, 1) },
+    const quickOptions = [
+      { label: "Today", getValue: () => today },
+      { label: "Yesterday", getValue: () => addDays(today, -1) },
+      { label: "This week", getValue: () => startOfWeek(today, { weekStartsOn: 1 }) },
+      { label: "Last week", getValue: () => startOfWeek(addWeeks(today, -1), { weekStartsOn: 1 }) },
+      { label: "This month", getValue: () => startOfMonth(today) },
+      { label: "Last month", getValue: () => startOfMonth(subMonths(today, 1)) },
+      { label: "This year", getValue: () => startOfYear(today) },
+      { label: "Last year", getValue: () => startOfYear(subYears(today, 1)) },
     ];
 
-    const handlePresetSelect = (presetDate: Date) => {
-      onSelect?.(presetDate);
+    const handleQuickSelect = (getValue: () => Date) => {
+      const selectedDate = getValue();
+      onSelect?.(selectedDate);
       setIsOpen(false);
     };
 
@@ -56,7 +60,7 @@ const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
             disabled={disabled}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, "PPP") : <span>{placeholder}</span>}
+            {date ? format(date, "MMM d, yyyy") : <span>{placeholder}</span>}
           </Button>
         </PopoverTrigger>
         <PopoverContent 
@@ -66,36 +70,38 @@ const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
           sideOffset={8}
           style={{ zIndex: 70 }}
         >
-          <div className="p-3 space-y-3">
-            {/* Quick Presets */}
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-2">
-                <Clock className="h-3.5 w-3.5" />
-                Quick Select
-              </div>
-              <div className="grid grid-cols-2 gap-1">
-                {quickPresets.map((preset) => (
+          <div className="flex">
+            {/* Sidebar with quick options */}
+            <div className="w-32 border-r bg-gray-50/50 p-2">
+              <div className="space-y-1">
+                {quickOptions.map((option) => (
                   <Button
-                    key={preset.label}
+                    key={option.label}
                     variant="ghost"
                     size="sm"
-                    className="h-8 text-xs justify-start"
-                    onClick={() => handlePresetSelect(preset.value)}
+                    className="w-full h-8 text-xs justify-start font-normal text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                    onClick={() => handleQuickSelect(option.getValue)}
                   >
-                    {preset.label}
+                    {option.label}
                   </Button>
                 ))}
+                <div className="border-t border-gray-200 my-1"></div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full h-8 text-xs justify-start font-normal text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                  onClick={() => {
+                    // All time option - could show a special state or just close
+                    setIsOpen(false);
+                  }}
+                >
+                  All time
+                </Button>
               </div>
             </div>
             
-            {/* Separator */}
-            <div className="border-t border-border" />
-            
-            {/* Compact Calendar */}
-            <div>
-              <div className="text-sm font-medium text-muted-foreground mb-2">
-                Custom Date
-              </div>
+            {/* Calendar section */}
+            <div className="p-3">
               <Calendar
                 mode="single"
                 selected={date}
@@ -108,27 +114,27 @@ const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
                 classNames={{
                   months: "flex flex-col space-y-2",
                   month: "space-y-2",
-                  caption: "flex justify-center pt-1 relative items-center",
+                  caption: "flex justify-center pt-1 relative items-center mb-2",
                   caption_label: "text-sm font-medium",
                   nav: "space-x-1 flex items-center",
                   nav_button: cn(
-                    "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+                    "h-7 w-7 bg-transparent p-0 opacity-70 hover:opacity-100 hover:bg-gray-100 rounded-md"
                   ),
                   nav_button_previous: "absolute left-1",
                   nav_button_next: "absolute right-1",
                   table: "w-full border-collapse space-y-1",
-                  head_row: "flex",
-                  head_cell: "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]",
+                  head_row: "flex mb-1",
+                  head_cell: "text-gray-500 rounded-md w-8 font-normal text-xs text-center",
                   row: "flex w-full mt-1",
                   cell: "h-8 w-8 text-center text-sm relative p-0 rounded-md focus-within:relative focus-within:z-20",
                   day: cn(
-                    "h-8 w-8 p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground rounded-md"
+                    "h-8 w-8 p-0 font-normal text-sm hover:bg-gray-100 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   ),
-                  day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                  day_today: "bg-accent text-accent-foreground",
-                  day_outside: "text-muted-foreground opacity-50",
-                  day_disabled: "text-muted-foreground opacity-50",
-                  day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                  day_selected: "bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700",
+                  day_today: "bg-gray-100 text-gray-900 font-medium",
+                  day_outside: "text-gray-400 opacity-50",
+                  day_disabled: "text-gray-300 opacity-50",
+                  day_range_middle: "aria-selected:bg-blue-100 aria-selected:text-blue-900",
                   day_hidden: "invisible",
                 }}
               />
