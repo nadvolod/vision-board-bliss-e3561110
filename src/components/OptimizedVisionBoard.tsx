@@ -1,8 +1,10 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useOptimizedGoals } from '../hooks/useOptimizedGoals';
+import { useGoalFilters } from '../hooks/useGoalFilters';
 import OptimizedGoalCard from './OptimizedGoalCard';
 import ViewGoal from './ViewGoal';
+import GoalFilters, { FilterPeriod } from './GoalFilters';
 import { Goal } from '../types';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -24,6 +26,7 @@ const OptimizedVisionBoard: React.FC = () => {
   
   const { data: goals, isLoading, error } = useOptimizedGoals();
   const [selectedGoalIndex, setSelectedGoalIndex] = useState<number | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<FilterPeriod>('all');
   
   // Ensure goals is always an array, even during loading
   const safeGoals = goals || [];
@@ -40,6 +43,9 @@ const OptimizedVisionBoard: React.FC = () => {
     console.log('OptimizedVisionBoard: Active goals:', active.length, 'Has achieved:', hasAchieved);
     return { activeGoals: active, hasAchievedGoals: hasAchieved };
   }, [safeGoals]);
+
+  // Apply date-based filtering to active goals
+  const filteredGoals = useGoalFilters(activeGoals, selectedPeriod);
   
   const handleGoalClick = useCallback((index: number) => {
     console.log('OptimizedVisionBoard: Goal clicked at index:', index);
@@ -52,26 +58,32 @@ const OptimizedVisionBoard: React.FC = () => {
   }, []);
   
   const handleNextGoal = useCallback(() => {
-    if (selectedGoalIndex === null || activeGoals.length === 0) return;
-    const nextIndex = (selectedGoalIndex + 1) % activeGoals.length;
+    if (selectedGoalIndex === null || filteredGoals.length === 0) return;
+    const nextIndex = (selectedGoalIndex + 1) % filteredGoals.length;
     console.log('OptimizedVisionBoard: Next goal, index:', nextIndex);
     setSelectedGoalIndex(nextIndex);
-  }, [selectedGoalIndex, activeGoals.length]);
+  }, [selectedGoalIndex, filteredGoals.length]);
   
   const handlePreviousGoal = useCallback(() => {
-    if (selectedGoalIndex === null || activeGoals.length === 0) return;
-    const prevIndex = (selectedGoalIndex - 1 + activeGoals.length) % activeGoals.length;
+    if (selectedGoalIndex === null || filteredGoals.length === 0) return;
+    const prevIndex = (selectedGoalIndex - 1 + filteredGoals.length) % filteredGoals.length;
     console.log('OptimizedVisionBoard: Previous goal, index:', prevIndex);
     setSelectedGoalIndex(prevIndex);
-  }, [selectedGoalIndex, activeGoals.length]);
+  }, [selectedGoalIndex, filteredGoals.length]);
   
   const selectedGoal: Goal | null = useMemo(() => {
-    const goal = selectedGoalIndex !== null && activeGoals[selectedGoalIndex] 
-      ? activeGoals[selectedGoalIndex] 
+    const goal = selectedGoalIndex !== null && filteredGoals[selectedGoalIndex] 
+      ? filteredGoals[selectedGoalIndex] 
       : null;
     console.log('OptimizedVisionBoard: Selected goal:', goal?.id || 'none');
     return goal;
-  }, [selectedGoalIndex, activeGoals]);
+  }, [selectedGoalIndex, filteredGoals]);
+
+  const handlePeriodChange = useCallback((period: FilterPeriod) => {
+    console.log('OptimizedVisionBoard: Changing filter period to:', period);
+    setSelectedPeriod(period);
+    setSelectedGoalIndex(null); // Reset selection when filter changes
+  }, []);
 
   // Handle error state
   if (error) {
@@ -121,6 +133,15 @@ const OptimizedVisionBoard: React.FC = () => {
         )}
       </div>
       
+      {/* Add filters only when there are active goals */}
+      {activeGoals.length > 0 && (
+        <GoalFilters
+          selectedPeriod={selectedPeriod}
+          onPeriodChange={handlePeriodChange}
+          goalCount={filteredGoals.length}
+        />
+      )}
+      
       {activeGoals.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-[60vh]">
           <div className="text-center max-w-md animate-float">
@@ -143,9 +164,18 @@ const OptimizedVisionBoard: React.FC = () => {
             )}
           </div>
         </div>
+      ) : filteredGoals.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-[50vh]">
+          <div className="text-center max-w-md">
+            <h3 className="text-xl font-semibold mb-2">No goals in this time period</h3>
+            <p className="text-muted-foreground mb-4">
+              Try selecting a different time period or add goals with deadlines in this range.
+            </p>
+          </div>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-          {activeGoals.map((goal, index) => (
+          {filteredGoals.map((goal, index) => (
             <div key={goal.id} className="animate-fade-in">
               <OptimizedGoalCard 
                 goal={goal} 
