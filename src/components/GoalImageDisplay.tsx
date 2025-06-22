@@ -1,7 +1,13 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Pencil, Trash, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pencil, Trash, X, MoreHorizontal } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface GoalImageDisplayProps {
   image: string;
@@ -49,9 +55,9 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
   };
 
   return (
-    <div className="flex flex-col">
-      {/* Image container - full height with no padding */}
-      <div className="relative w-full h-[80vh] bg-black flex justify-center items-center overflow-hidden">
+    <div className="flex flex-col h-[90vh]">
+      {/* Image container with centered navigation arrows */}
+      <div className="relative w-full flex-1 bg-black flex justify-center items-center overflow-hidden">
         {!imageError ? (
           <img
             src={image}
@@ -77,53 +83,64 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
           onClick={onClose}
           variant="ghost"
           size="icon"
-          className="absolute top-4 right-4 h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 transition-colors"
+          className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/70 transition-colors text-white"
           aria-label="Close dialog"
         >
-          <X className="h-4 w-4" />
+          <X className="h-5 w-5" />
+        </Button>
+
+        {/* Actions menu in the top left */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 left-4 h-10 w-10 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/70 transition-colors text-white"
+              aria-label="Goal actions"
+            >
+              <MoreHorizontal className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-48">
+            <DropdownMenuItem onClick={handleEditClick} className="flex items-center gap-2">
+              <Pencil className="h-4 w-4" />
+              Edit Goal
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onDelete} className="flex items-center gap-2 text-red-600">
+              <Trash className="h-4 w-4" />
+              Delete Goal
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        
+        {/* Left navigation arrow - centered vertically */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/70 transition-colors text-white"
+          onClick={onPrevious}
+          aria-label="Previous goal"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </Button>
+        
+        {/* Right navigation arrow - centered vertically */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/70 transition-colors text-white"
+          onClick={onNext}
+          aria-label="Next goal"
+        >
+          <ChevronRight className="h-6 w-6" />
         </Button>
       </div>
       
-      {/* Navigation and action buttons below the image */}
-      <div className="flex justify-between items-center p-4 bg-background border-t">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-9 w-9 rounded-full"
-          onClick={onPrevious}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        
-        {/* Center action buttons */}
-        <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            size="icon"
-            className="h-9 w-9 rounded-full"
-            onClick={handleEditClick}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          
-          <Button
-            variant="destructive"
-            size="icon"
-            className="h-9 w-9 rounded-full"
-            onClick={onDelete}
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
-        </div>
-        
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-9 w-9 rounded-full"
-          onClick={onNext}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+      {/* Goal description below the image */}
+      <div className="p-6 bg-background border-t">
+        <h3 className="text-lg font-semibold text-center text-foreground">
+          {description}
+        </h3>
       </div>
     </div>
   );
