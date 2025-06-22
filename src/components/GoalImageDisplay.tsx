@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Pencil, Trash, X, MoreHorizontal } from 'lucide-react';
 import {
@@ -39,6 +39,14 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
   onClose
 }) => {
   const [imageError, setImageError] = useState(false);
+  const [currentImageSrc, setCurrentImageSrc] = useState(image);
+
+  // Reset image error state when image prop changes
+  useEffect(() => {
+    console.log('GoalImageDisplay: Image changed to:', image);
+    setImageError(false);
+    setCurrentImageSrc(image);
+  }, [image]);
 
   const getRandomDefaultImage = () => {
     const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGES.length);
@@ -46,7 +54,11 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
   };
 
   const handleImageError = () => {
-    setImageError(true);
+    console.log('GoalImageDisplay: Image error for:', currentImageSrc);
+    if (!imageError) {
+      setImageError(true);
+      setCurrentImageSrc(getRandomDefaultImage());
+    }
   };
 
   const handleEditClick = () => {
@@ -58,32 +70,20 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
     <div className="flex flex-col h-[90vh]">
       {/* Image container with centered navigation arrows */}
       <div className="relative w-full flex-1 bg-black flex justify-center items-center overflow-hidden">
-        {!imageError ? (
-          <img
-            src={image}
-            alt={description}
-            className="w-full h-full object-cover"
-            onError={handleImageError}
-          />
-        ) : (
-          <img
-            src={getRandomDefaultImage()}
-            alt="Default vision image"
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              // If even the fallback fails, show an icon placeholder
-              const target = e.target as HTMLImageElement;
-              target.style.display = 'none';
-            }}
-          />
-        )}
+        <img
+          src={currentImageSrc}
+          alt={description}
+          className="w-full h-full object-cover"
+          onError={handleImageError}
+          onLoad={() => console.log('GoalImageDisplay: Image loaded successfully:', currentImageSrc)}
+        />
         
         {/* Close button in the top right */}
         <Button
           onClick={onClose}
           variant="ghost"
           size="icon"
-          className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/70 transition-colors text-white"
+          className="absolute top-6 right-6 h-10 w-10 rounded-full bg-black/60 backdrop-blur-sm hover:bg-black/80 transition-colors text-white z-20"
           aria-label="Close dialog"
         >
           <X className="h-5 w-5" />
@@ -95,7 +95,7 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-4 left-4 h-10 w-10 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/70 transition-colors text-white"
+              className="absolute top-6 left-6 h-10 w-10 rounded-full bg-black/60 backdrop-blur-sm hover:bg-black/80 transition-colors text-white z-20"
               aria-label="Goal actions"
             >
               <MoreHorizontal className="h-5 w-5" />
@@ -113,32 +113,32 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
           </DropdownMenuContent>
         </DropdownMenu>
         
-        {/* Left navigation arrow - centered vertically */}
+        {/* Left navigation arrow - centered vertically with better positioning */}
         <Button
           variant="ghost"
           size="icon"
-          className="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/70 transition-colors text-white"
+          className="absolute left-8 top-1/2 -translate-y-1/2 h-14 w-14 rounded-full bg-black/60 backdrop-blur-sm hover:bg-black/80 transition-all duration-200 text-white z-10 hover:scale-110"
           onClick={onPrevious}
           aria-label="Previous goal"
         >
-          <ChevronLeft className="h-6 w-6" />
+          <ChevronLeft className="h-7 w-7" />
         </Button>
         
-        {/* Right navigation arrow - centered vertically */}
+        {/* Right navigation arrow - centered vertically with better positioning */}
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/70 transition-colors text-white"
+          className="absolute right-8 top-1/2 -translate-y-1/2 h-14 w-14 rounded-full bg-black/60 backdrop-blur-sm hover:bg-black/80 transition-all duration-200 text-white z-10 hover:scale-110"
           onClick={onNext}
           aria-label="Next goal"
         >
-          <ChevronRight className="h-6 w-6" />
+          <ChevronRight className="h-7 w-7" />
         </Button>
       </div>
       
       {/* Goal description below the image */}
-      <div className="p-6 bg-background border-t">
-        <h3 className="text-lg font-semibold text-center text-foreground">
+      <div className="p-6 bg-background border-t flex-shrink-0">
+        <h3 className="text-lg font-semibold text-center text-foreground leading-relaxed">
           {description}
         </h3>
       </div>
