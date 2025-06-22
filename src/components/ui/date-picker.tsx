@@ -91,7 +91,6 @@ const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
                   size="sm"
                   className="w-full h-8 text-xs justify-start font-normal text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                   onClick={() => {
-                    // All time option - could show a special state or just close
                     setIsOpen(false);
                   }}
                 >
@@ -100,14 +99,13 @@ const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
               </div>
             </div>
             
-            {/* Calendar section */}
+            {/* Calendar section - simplified without dropdown controls */}
             <div className="p-3">
               <Calendar
                 mode="single"
                 selected={date}
                 onSelect={handleCalendarSelect}
                 initialFocus
-                captionLayout="dropdown-buttons"
                 fromYear={2000}
                 toYear={2100}
                 className="p-0"
