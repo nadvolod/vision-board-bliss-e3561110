@@ -2,19 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar } from '@/components/ui/calendar';
-import { format, parseISO } from 'date-fns';
+import { DatePicker } from '@/components/ui/date-picker';
+import { parseISO } from 'date-fns';
 import { useOptimizedGoalContext } from '@/context/OptimizedGoalContext';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
-import { Calendar as CalendarIcon } from 'lucide-react';
 import { Goal } from '../types';
 
 interface EditGoalModalProps {
@@ -90,7 +82,7 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
-                className="min-h-[100px]"
+                className="min-h-[100px] resize-none"
               />
             </div>
             
@@ -101,47 +93,17 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
                 placeholder="Why is this goal important to you?"
                 value={why}
                 onChange={(e) => setWhy(e.target.value)}
-                className="min-h-[100px]"
+                className="min-h-[100px] resize-none"
               />
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="edit-deadline">Target Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="edit-deadline"
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent 
-                  className="w-auto p-0" 
-                  align="center"
-                  side="bottom"
-                  sideOffset={8}
-                  avoidCollisions={true}
-                  collisionPadding={16}
-                  style={{ zIndex: 70 }}
-                >
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                    captionLayout="dropdown-buttons"
-                    fromYear={2000}
-                    toYear={2100}
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
+              <DatePicker
+                date={date}
+                onSelect={setDate}
+                placeholder="Pick your target date"
+              />
             </div>
             
             <div className="flex justify-end gap-2 pt-2">

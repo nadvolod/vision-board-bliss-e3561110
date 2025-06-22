@@ -1,19 +1,13 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar } from '@/components/ui/calendar';
-import { format } from 'date-fns';
+import { DatePicker } from '@/components/ui/date-picker';
 import { useOptimizedGoalContext } from '@/context/OptimizedGoalContext';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
-import { Calendar as CalendarIcon, Image } from 'lucide-react';
+import { Image } from 'lucide-react';
 
 interface UploadModalProps {
   isOpen: boolean;
@@ -85,8 +79,14 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
     }, 500);
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto pb-6">
         <DialogHeader>
           <DialogTitle>Add New Vision</DialogTitle>
@@ -127,7 +127,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
-              className="min-h-[80px]"
+              className="min-h-[80px] resize-none"
             />
           </div>
           
@@ -138,38 +138,17 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
               placeholder="Why is this goal important to you?"
               value={why}
               onChange={(e) => setWhy(e.target.value)}
-              className="min-h-[80px]"
+              className="min-h-[80px] resize-none"
             />
           </div>
           
           <div className="space-y-2">
             <Label htmlFor="deadline">Target Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  initialFocus
-                  captionLayout="dropdown-buttons"
-                  fromYear={2000}
-                  toYear={2100}
-                  className={cn("p-3 pointer-events-auto")}
-                />
-              </PopoverContent>
-            </Popover>
+            <DatePicker
+              date={date}
+              onSelect={setDate}
+              placeholder="Pick your target date"
+            />
           </div>
           
           <div className="flex justify-end gap-2 pt-4 pb-2 sticky bottom-0 bg-background">
