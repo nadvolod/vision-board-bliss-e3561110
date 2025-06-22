@@ -104,8 +104,8 @@ const OptimizedVisionBoard: React.FC = () => {
   if (isLoading || !goals) {
     console.log('OptimizedVisionBoard: Showing loading state');
     return (
-      <>
-        <div className="flex justify-between items-center px-4 py-2">
+      <div className="flex flex-col h-full">
+        <div className="flex justify-between items-center px-4 py-3 border-b">
           <h2 className="text-lg font-medium">My Current Goals</h2>
         </div>
         
@@ -114,26 +114,29 @@ const OptimizedVisionBoard: React.FC = () => {
             <FastSkeleton key={index} />
           ))}
         </div>
-      </>
+      </div>
     );
   }
 
   console.log('OptimizedVisionBoard: Rendering main content');
 
   return (
-    <>
-      <div className="flex justify-between items-center px-4 py-2">
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="flex justify-between items-center px-4 py-3 border-b bg-background">
         <h2 className="text-lg font-medium">My Current Goals</h2>
         {hasAchievedGoals && (
           <Link to="/achievements">
             <Button variant="outline" className="flex items-center gap-2">
-              <Trophy className="h-4 w-4" /> View Achievements
+              <Trophy className="h-4 w-4" /> 
+              <span className="hidden sm:inline">View Achievements</span>
+              <span className="sm:hidden">Achievements</span>
             </Button>
           </Link>
         )}
       </div>
       
-      {/* Add filters only when there are active goals */}
+      {/* Filters - only show when there are active goals */}
       {activeGoals.length > 0 && (
         <GoalFilters
           selectedPeriod={selectedPeriod}
@@ -142,50 +145,53 @@ const OptimizedVisionBoard: React.FC = () => {
         />
       )}
       
-      {activeGoals.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-[60vh]">
-          <div className="text-center max-w-md animate-float">
-            <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-vision-purple to-vision-teal bg-clip-text text-transparent">Welcome to Your Vision Board</h2>
-            <p className="text-muted-foreground mb-4">
-              Add images that represent your goals and dreams
-            </p>
-            <div className="opacity-40 text-center">
-              <p className="text-6xl mb-2">✨</p>
-              <p className="text-sm">Click the "Add Goal" button to get started</p>
-            </div>
-            {hasAchievedGoals && (
-              <div className="mt-8">
-                <Link to="/achievements">
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Trophy className="h-4 w-4" /> View Your Achievements
-                  </Button>
-                </Link>
+      {/* Content */}
+      <div className="flex-1 overflow-auto">
+        {activeGoals.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full min-h-[60vh]">
+            <div className="text-center max-w-md animate-float">
+              <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-vision-purple to-vision-teal bg-clip-text text-transparent">Welcome to Your Vision Board</h2>
+              <p className="text-muted-foreground mb-4">
+                Add images that represent your goals and dreams
+              </p>
+              <div className="opacity-40 text-center">
+                <p className="text-6xl mb-2">✨</p>
+                <p className="text-sm">Click the "Add Goal" button to get started</p>
               </div>
-            )}
-          </div>
-        </div>
-      ) : filteredGoals.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-[50vh]">
-          <div className="text-center max-w-md">
-            <h3 className="text-xl font-semibold mb-2">No goals in this time period</h3>
-            <p className="text-muted-foreground mb-4">
-              Try selecting a different time period or add goals with deadlines in this range.
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-          {filteredGoals.map((goal, index) => (
-            <div key={goal.id} className="animate-fade-in">
-              <OptimizedGoalCard 
-                goal={goal} 
-                onClick={() => handleGoalClick(index)}
-                index={index}
-              />
+              {hasAchievedGoals && (
+                <div className="mt-8">
+                  <Link to="/achievements">
+                    <Button variant="outline" className="flex items-center gap-2">
+                      <Trophy className="h-4 w-4" /> View Your Achievements
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ) : filteredGoals.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full min-h-[50vh]">
+            <div className="text-center max-w-md">
+              <h3 className="text-xl font-semibold mb-2">No goals in this time period</h3>
+              <p className="text-muted-foreground mb-4">
+                Try selecting a different time period or add goals with deadlines in this range.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+            {filteredGoals.map((goal, index) => (
+              <div key={goal.id} className="animate-fade-in">
+                <OptimizedGoalCard 
+                  goal={goal} 
+                  onClick={() => handleGoalClick(index)}
+                  index={index}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
       
       <ViewGoal
         goal={selectedGoal}
@@ -193,7 +199,7 @@ const OptimizedVisionBoard: React.FC = () => {
         onNext={handleNextGoal}
         onPrevious={handlePreviousGoal}
       />
-    </>
+    </div>
   );
 };
 
