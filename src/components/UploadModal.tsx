@@ -15,26 +15,15 @@ interface UploadModalProps {
 }
 
 const DEFAULT_IMAGES = [
-  "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=500&auto=format&fit=crop", // vision/goal generic
-  "https://images.unsplash.com/photo-1617912187990-804dd1618f8d?w=500&auto=format&fit=crop", // success/achievement
-  "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500&auto=format&fit=crop", // growth/development
-  "https://images.unsplash.com/photo-1521791055366-0d553872125f?w=500&auto=format&fit=crop", // career/professional
-  "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&auto=format&fit=crop", // travel/adventure
+  "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=500&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1617912187990-804dd1618f8d?w=500&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1521791055366-0d553872125f?w=500&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&auto=format&fit=crop",
 ];
 
 const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
-  console.log('🔄 UploadModal: Component rendering, isOpen:', isOpen);
-  
-  // Add error boundary for context usage
-  let addGoal;
-  try {
-    const context = useOptimizedGoalContext();
-    addGoal = context.addGoal;
-  } catch (error) {
-    console.error('❌ UploadModal: Context not available:', error);
-    return null; // Don't render if context is not available
-  }
-
+  const { addGoal } = useOptimizedGoalContext();
   const [description, setDescription] = useState('');
   const [why, setWhy] = useState('');
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -66,14 +55,10 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
       return;
     }
     
-    console.log('📝 UploadModal: Starting goal creation');
     setIsUploading(true);
     
     try {
-      // Use the uploaded image or a default one
       const imageToUse = imagePreview || getRandomDefaultImage();
-      
-      console.log('UploadModal: Creating new goal with image:', imageToUse);
       
       await addGoal({
         image: imageToUse,
@@ -81,8 +66,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
         why: why.trim() || undefined,
         deadline: date.toISOString(),
       });
-      
-      console.log('✅ UploadModal: Goal created successfully');
       
       // Reset form
       setImagePreview(null);
@@ -93,7 +76,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
       setIsUploading(false);
       onClose();
     } catch (error) {
-      console.error('❌ UploadModal: Error creating goal:', error);
+      console.error('Error creating goal:', error);
       setIsUploading(false);
     }
   };
