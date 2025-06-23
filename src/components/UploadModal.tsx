@@ -23,7 +23,18 @@ const DEFAULT_IMAGES = [
 ];
 
 const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
-  const { addGoal } = useOptimizedGoalContext();
+  console.log('🔄 UploadModal: Component rendering, isOpen:', isOpen);
+  
+  // Add error boundary for context usage
+  let addGoal;
+  try {
+    const context = useOptimizedGoalContext();
+    addGoal = context.addGoal;
+  } catch (error) {
+    console.error('❌ UploadModal: Context not available:', error);
+    return null; // Don't render if context is not available
+  }
+
   const [description, setDescription] = useState('');
   const [why, setWhy] = useState('');
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -55,6 +66,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
       return;
     }
     
+    console.log('📝 UploadModal: Starting goal creation');
     setIsUploading(true);
     
     try {
@@ -70,7 +82,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
         deadline: date.toISOString(),
       });
       
-      console.log('UploadModal: Goal created successfully');
+      console.log('✅ UploadModal: Goal created successfully');
       
       // Reset form
       setImagePreview(null);
@@ -81,7 +93,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
       setIsUploading(false);
       onClose();
     } catch (error) {
-      console.error('UploadModal: Error creating goal:', error);
+      console.error('❌ UploadModal: Error creating goal:', error);
       setIsUploading(false);
     }
   };

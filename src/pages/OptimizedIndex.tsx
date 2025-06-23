@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import OptimizedVisionBoard from '../components/OptimizedVisionBoard';
 import UploadModal from '../components/UploadModal';
 import { useAuth } from '../context/AuthContext';
+import { useOptimizedGoalContext } from '../context/OptimizedGoalContext';
 
 const OptimizedIndex: React.FC = () => {
   console.time('OptimizedIndex-mount');
@@ -12,6 +13,15 @@ const OptimizedIndex: React.FC = () => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const { user } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
+
+  // Check if goal context is available
+  let isContextAvailable = false;
+  try {
+    useOptimizedGoalContext();
+    isContextAvailable = true;
+  } catch (error) {
+    console.warn('⚠️ OptimizedGoalContext not available yet');
+  }
 
   useEffect(() => {
     console.time('mobile-detection');
@@ -32,12 +42,17 @@ const OptimizedIndex: React.FC = () => {
 
   useEffect(() => {
     console.log(`👤 User state: ${user ? 'authenticated' : 'not authenticated'}`);
+    console.log(`🔧 Context available: ${isContextAvailable}`);
     console.timeEnd('OptimizedIndex-mount');
-  }, [user]);
+  }, [user, isContextAvailable]);
 
   const openUploadModal = () => {
-    console.log('📝 Opening upload modal');
-    setIsUploadModalOpen(true);
+    console.log('📝 Opening upload modal, context available:', isContextAvailable);
+    if (isContextAvailable) {
+      setIsUploadModalOpen(true);
+    } else {
+      console.warn('⚠️ Cannot open modal, context not available');
+    }
   };
   
   const closeUploadModal = () => {
@@ -52,7 +67,7 @@ const OptimizedIndex: React.FC = () => {
         <OptimizedVisionBoard />
       </main>
       
-      {user && (
+      {user && isContextAvailable && (
         <UploadModal 
           isOpen={isUploadModalOpen}
           onClose={closeUploadModal}
