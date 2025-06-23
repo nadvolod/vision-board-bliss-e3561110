@@ -21,7 +21,7 @@ export const useOptimizedGoals = () => {
         const { data, error } = await supabase
           .from('user_goals')
           .select('*')
-          .eq('user_id', user.id) // Add user filter for better performance and security
+          .eq('user_id', user.id)
           .order('created_at', { ascending: false });
 
         if (error) {
@@ -50,13 +50,13 @@ export const useOptimizedGoals = () => {
       }
     },
     enabled: !!user,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes (renamed from cacheTime)
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    staleTime: 1 * 60 * 1000, // Reduced to 1 minute for more responsive updates
+    gcTime: 5 * 60 * 1000, // Reduced to 5 minutes
+    refetchOnWindowFocus: true, // Enable refetch on window focus for better UX
+    refetchOnMount: true, // Always refetch on mount
     retry: (failureCount, error) => {
       console.log('useOptimizedGoals: Retry attempt', failureCount, 'Error:', error);
-      return failureCount < 2; // Only retry once
+      return failureCount < 2;
     },
   });
 };

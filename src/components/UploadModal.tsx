@@ -48,7 +48,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
     return DEFAULT_IMAGES[randomIndex];
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!description.trim() || !date) {
@@ -57,16 +57,20 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
     
     setIsUploading(true);
     
-    // Use the uploaded image or a default one
-    const imageToUse = imagePreview || getRandomDefaultImage();
-    
-    setTimeout(() => {
-      addGoal({
+    try {
+      // Use the uploaded image or a default one
+      const imageToUse = imagePreview || getRandomDefaultImage();
+      
+      console.log('UploadModal: Creating new goal with image:', imageToUse);
+      
+      await addGoal({
         image: imageToUse,
         description: description.trim(),
         why: why.trim() || undefined,
         deadline: date.toISOString(),
       });
+      
+      console.log('UploadModal: Goal created successfully');
       
       // Reset form
       setImagePreview(null);
@@ -76,11 +80,14 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
       setImageFile(null);
       setIsUploading(false);
       onClose();
-    }, 500);
+    } catch (error) {
+      console.error('UploadModal: Error creating goal:', error);
+      setIsUploading(false);
+    }
   };
 
   const handleOpenChange = (open: boolean) => {
-    if (!open) {
+    if (!open && !isUploading) {
       onClose();
     }
   };
@@ -99,6 +106,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
               type="file" 
               accept="image/*"
               onChange={handleImageChange}
+              disabled={isUploading}
             />
             {imagePreview ? (
               <div className="mt-2 relative aspect-video">
@@ -127,6 +135,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
+              disabled={isUploading}
               className="min-h-[80px] resize-none"
             />
           </div>
@@ -138,6 +147,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
               placeholder="Why is this goal important to you?"
               value={why}
               onChange={(e) => setWhy(e.target.value)}
+              disabled={isUploading}
               className="min-h-[80px] resize-none"
             />
           </div>
@@ -148,11 +158,19 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
               date={date}
               onSelect={setDate}
               placeholder="Pick your target date"
+              disabled={isUploading}
             />
           </div>
           
           <div className="flex justify-end gap-2 pt-4 pb-2 sticky bottom-0 bg-background">
-            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onClose}
+              disabled={isUploading}
+            >
+              Cancel
+            </Button>
             <Button 
               type="submit" 
               disabled={isUploading || !description.trim() || !date}

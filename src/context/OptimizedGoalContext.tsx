@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, ReactNode } from "react";
 import { Goal } from "../types";
 import { useToast } from "@/components/ui/use-toast";
@@ -33,12 +32,14 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const invalidateGoals = () => {
+  const invalidateAndRefetch = () => {
     queryClient.invalidateQueries({ queryKey: ['goals', user?.id] });
+    queryClient.refetchQueries({ queryKey: ['goals', user?.id] });
   };
 
   const addGoalMutation = useMutation({
     mutationFn: async (newGoal: Omit<Goal, "id" | "createdAt" | "achieved" | "achievedAt">) => {
+      console.log('OptimizedGoalContext: Starting addGoal mutation');
       if (!user) throw new Error("User not authenticated");
 
       const { data, error } = await supabase
@@ -54,17 +55,53 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('OptimizedGoalContext: Supabase error in addGoal:', error);
+        throw error;
+      }
+
+      console.log('OptimizedGoalContext: Goal added successfully:', data);
       return data;
     },
-    onSuccess: () => {
-      invalidateGoals();
+    onMutate: async (newGoal) => {
+      // Optimistic update
+      console.log('OptimizedGoalContext: Performing optimistic update');
+      await queryClient.cancelQueries({ queryKey: ['goals', user?.id] });
+      
+      const previousGoals = queryClient.getQueryData(['goals', user?.id]);
+      
+      // Create optimistic goal
+      const optimisticGoal: Goal = {
+        id: `temp-${Date.now()}`,
+        image: newGoal.image,
+        description: newGoal.description,
+        why: newGoal.why,
+        deadline: newGoal.deadline,
+        createdAt: new Date().toISOString(),
+        achieved: false,
+        achievedAt: undefined,
+      };
+      
+      queryClient.setQueryData(['goals', user?.id], (old: Goal[] | undefined) => {
+        return [optimisticGoal, ...(old || [])];
+      });
+      
+      return { previousGoals };
+    },
+    onSuccess: (data) => {
+      console.log('OptimizedGoalContext: addGoal succeeded, refreshing data');
+      invalidateAndRefetch();
       toast({
         title: "Goal added",
         description: "Your vision has been added to your board",
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, newGoal, context) => {
+      console.error('OptimizedGoalContext: addGoal error:', error);
+      // Rollback optimistic update
+      if (context?.previousGoals) {
+        queryClient.setQueryData(['goals', user?.id], context.previousGoals);
+      }
       toast({
         title: "Error adding goal",
         description: error.message,
@@ -75,6 +112,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
 
   const deleteGoalMutation = useMutation({
     mutationFn: async (id: string) => {
+      console.log('OptimizedGoalContext: Deleting goal:', id);
       const { error } = await supabase
         .from("user_goals")
         .delete()
@@ -82,14 +120,32 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
 
       if (error) throw error;
     },
+    onMutate: async (deletedId) => {
+      // Optimistic update
+      await queryClient.cancelQueries({ queryKey: ['goals', user?.id] });
+      
+      const previousGoals = queryClient.getQueryData(['goals', user?.id]);
+      
+      queryClient.setQueryData(['goals', user?.id], (old: Goal[] | undefined) => {
+        return (old || []).filter(goal => goal.id !== deletedId);
+      });
+      
+      return { previousGoals };
+    },
     onSuccess: () => {
-      invalidateGoals();
+      console.log('OptimizedGoalContext: deleteGoal succeeded');
+      invalidateAndRefetch();
       toast({
         title: "Goal removed",
         description: "Your vision has been removed from your board",
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, deletedId, context) => {
+      console.error('OptimizedGoalContext: deleteGoal error:', error);
+      // Rollback optimistic update
+      if (context?.previousGoals) {
+        queryClient.setQueryData(['goals', user?.id], context.previousGoals);
+      }
       toast({
         title: "Error removing goal",
         description: error.message,
@@ -113,7 +169,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
       if (error) throw error;
     },
     onSuccess: () => {
-      invalidateGoals();
+      invalidateAndRefetch();
       toast({
         title: "Goal updated",
         description: "Your vision has been updated",
@@ -142,7 +198,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
       if (error) throw error;
     },
     onSuccess: () => {
-      invalidateGoals();
+      invalidateAndRefetch();
       toast({
         title: "Congratulations! 🎉",
         description: "You've achieved your goal!",
