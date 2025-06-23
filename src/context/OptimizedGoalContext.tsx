@@ -33,9 +33,8 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const invalidateAndRefetch = () => {
+  const invalidateQueries = () => {
     queryClient.invalidateQueries({ queryKey: ['goals', user?.id] });
-    queryClient.refetchQueries({ queryKey: ['goals', user?.id] });
   };
 
   const addGoalMutation = useMutation({
@@ -55,45 +54,17 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         .select()
         .single();
 
-      if (error) {
-        throw error;
-      }
-
+      if (error) throw error;
       return data;
     },
-    onMutate: async (newGoal) => {
-      await queryClient.cancelQueries({ queryKey: ['goals', user?.id] });
-      
-      const previousGoals = queryClient.getQueryData(['goals', user?.id]);
-      
-      const optimisticGoal: Goal = {
-        id: `temp-${Date.now()}`,
-        image: newGoal.image,
-        description: newGoal.description,
-        why: newGoal.why,
-        deadline: newGoal.deadline,
-        createdAt: new Date().toISOString(),
-        achieved: false,
-        achievedAt: undefined,
-      };
-      
-      queryClient.setQueryData(['goals', user?.id], (old: Goal[] | undefined) => {
-        return [optimisticGoal, ...(old || [])];
-      });
-      
-      return { previousGoals };
-    },
     onSuccess: () => {
-      invalidateAndRefetch();
+      invalidateQueries();
       toast({
         title: "Goal added",
         description: "Your vision has been added to your board",
       });
     },
-    onError: (error: any, newGoal, context) => {
-      if (context?.previousGoals) {
-        queryClient.setQueryData(['goals', user?.id], context.previousGoals);
-      }
+    onError: (error: any) => {
       toast({
         title: "Error adding goal",
         description: error.message,
@@ -109,32 +80,16 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         .delete()
         .eq("id", id);
 
-      if (error) {
-        throw error;
-      }
-    },
-    onMutate: async (deletedId) => {
-      await queryClient.cancelQueries({ queryKey: ['goals', user?.id] });
-      
-      const previousGoals = queryClient.getQueryData(['goals', user?.id]);
-      
-      queryClient.setQueryData(['goals', user?.id], (old: Goal[] | undefined) => {
-        return (old || []).filter(goal => goal.id !== deletedId);
-      });
-      
-      return { previousGoals };
+      if (error) throw error;
     },
     onSuccess: () => {
-      invalidateAndRefetch();
+      invalidateQueries();
       toast({
         title: "Goal removed",
         description: "Your vision has been removed from your board",
       });
     },
-    onError: (error: any, deletedId, context) => {
-      if (context?.previousGoals) {
-        queryClient.setQueryData(['goals', user?.id], context.previousGoals);
-      }
+    onError: (error: any) => {
       toast({
         title: "Error removing goal",
         description: error.message,
@@ -155,12 +110,10 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         })
         .eq("id", updatedGoal.id);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
     },
     onSuccess: () => {
-      invalidateAndRefetch();
+      invalidateQueries();
       toast({
         title: "Goal updated",
         description: "Your vision has been updated",
@@ -186,12 +139,10 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         })
         .eq("id", id);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
     },
     onSuccess: () => {
-      invalidateAndRefetch();
+      invalidateQueries();
       toast({
         title: "Congratulations! 🎉",
         description: "You've achieved your goal!",

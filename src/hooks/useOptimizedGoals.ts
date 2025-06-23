@@ -14,40 +14,36 @@ export const useOptimizedGoals = () => {
         return [];
       }
 
-      try {
-        const { data, error } = await supabase
-          .from('user_goals')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
+      const { data, error } = await supabase
+        .from('user_goals')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
 
-        if (error) {
-          throw error;
-        }
-
-        const mappedData = data?.map((item: UserGoal) => ({
-          id: item.id,
-          image: item.image,
-          description: item.description,
-          why: item.why || undefined,
-          deadline: item.deadline,
-          createdAt: item.created_at,
-          achieved: item.achieved,
-          achievedAt: item.achieved_at || undefined,
-        })) || [];
-
-        return mappedData;
-      } catch (error) {
-        console.error('Error fetching goals:', error);
+      if (error) {
         throw error;
       }
+
+      const mappedData = data?.map((item: UserGoal) => ({
+        id: item.id,
+        image: item.image,
+        description: item.description,
+        why: item.why || undefined,
+        deadline: item.deadline,
+        createdAt: item.created_at,
+        achieved: item.achieved,
+        achievedAt: item.achieved_at || undefined,
+      })) || [];
+
+      return mappedData;
     },
     enabled: !!user,
-    staleTime: 10 * 1000, // 10 seconds
-    gcTime: 60 * 1000, // 1 minute cache
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes cache
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: true,
-    retry: 1,
+    retry: 2,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 };

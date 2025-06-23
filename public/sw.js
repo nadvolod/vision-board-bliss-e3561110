@@ -1,5 +1,9 @@
 
-const CACHE_NAME = 'vision-board-v1';
+const CACHE_NAME = 'vision-board-v2';
+const STATIC_CACHE = 'static-v2';
+const IMAGES_CACHE = 'images-v2';
+const API_CACHE = 'api-v2';
+
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',
@@ -7,32 +11,57 @@ const urlsToCache = [
   '/manifest.json'
 ];
 
-// Cache Unsplash images aggressively
-const UNSPLASH_CACHE = 'unsplash-images-v1';
-
+// Install service worker and cache initial resources
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
+    Promise.all([
+      caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)),
+      caches.open(STATIC_CACHE),
+      caches.open(IMAGES_CACHE),
+      caches.open(API_CACHE)
+    ])
   );
+  self.skipWaiting();
+});
+
+// Activate service worker and clean up old caches
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (!['vision-board-v2', 'static-v2', 'images-v2', 'api-v2'].includes(cacheName)) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  // Cache Unsplash images with long expiry
-  if (event.request.url.includes('images.unsplash.com')) {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Handle Unsplash images with aggressive caching
+  if (url.hostname === 'images.unsplash.com') {
     event.respondWith(
-      caches.open(UNSPLASH_CACHE).then((cache) => {
-        return cache.match(event.request).then((response) => {
+      caches.open(IMAGES_CACHE).then((cache) => {
+        return cache.match(request).then((response) => {
           if (response) {
             return response;
           }
           
-          return fetch(event.request).then((response) => {
-            // Cache successful responses for 1 week
-            if (response.status === 200) {
-              cache.put(event.request, response.clone());
+          return fetch(request).then((response) => {
+            if (response.status === 200 && response.type === 'basic') {
+              const responseClone = response.clone();
+              cache.put(request, responseClone);
             }
             return response;
+          }).catch(() => {
+            // Return a placeholder image if fetch fails
+            return new Response('', { status: 204 });
           });
         });
       })
@@ -40,24 +69,52 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache API responses for 5 minutes
-  if (event.request.url.includes('/rest/v1/user_goals')) {
+  // Handle Supabase API requests with short-term caching
+  if (url.hostname.includes('supabase') && url.pathname.includes('/rest/v1/user_goals')) {
     event.respondWith(
-      caches.open('api-cache-v1').then((cache) => {
-        return cache.match(event.request).then((response) => {
+      caches.open(API_CACHE).then((cache) => {
+        return cache.match(request).then((response) => {
           if (response) {
-            const responseDate = new Date(response.headers.get('date'));
+            const responseDate = new Date(response.headers.get('date') || '');
             const now = new Date();
-            const fiveMinutes = 5 * 60 * 1000;
+            const oneMinute = 60 * 1000;
             
-            if (now - responseDate < fiveMinutes) {
+            if (now - responseDate < oneMinute) {
               return response;
             }
           }
           
-          return fetch(event.request).then((response) => {
+          return fetch(request).then((response) => {
             if (response.status === 200) {
-              cache.put(event.request, response.clone());
+              const responseClone = response.clone();
+              cache.put(request, responseClone);
+            }
+            return response;
+          }).catch(() => {
+            // Return cached response if available, even if stale
+            return response || new Response('[]', { 
+              status: 200, 
+              headers: { 'Content-Type': 'application/json' } 
+            });
+          });
+        });
+      })
+    );
+    return;
+  }
+
+  // Handle static assets
+  if (request.destination === 'script' || request.destination === 'style' || request.destination === 'document') {
+    event.respondWith(
+      caches.open(STATIC_CACHE).then((cache) => {
+        return cache.match(request).then((response) => {
+          if (response) {
+            return response;
+          }
+          
+          return fetch(request).then((response) => {
+            if (response.status === 200) {
+              cache.put(request, response.clone());
             }
             return response;
           });
@@ -67,11 +124,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Default fetch for other requests
+  // Default network-first strategy for other requests
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        return response || fetch(event.request);
-      })
+    fetch(request).catch(() => {
+      return caches.match(request);
+    })
   );
 });

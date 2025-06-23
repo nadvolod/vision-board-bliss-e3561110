@@ -1,5 +1,5 @@
 
-import React, { useState, memo, useCallback } from 'react';
+import React, { useState, memo, useCallback, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { format, parseISO, isValid } from 'date-fns';
 import { Goal } from '../types';
@@ -47,20 +47,24 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
     setImageLoaded(true);
   }, []);
 
-  const memoizedDate = formatDate(goal.deadline);
+  const memoizedDate = useMemo(() => formatDate(goal.deadline), [formatDate, goal.deadline]);
+  const memoizedImage = useMemo(() => 
+    imageError ? getDefaultImage() : goal.image, 
+    [imageError, getDefaultImage, goal.image]
+  );
 
   return (
     <Card
-      className="vision-card cursor-pointer overflow-hidden h-full flex flex-col hover:shadow-md transition-all"
+      className="vision-card cursor-pointer overflow-hidden h-full flex flex-col hover:shadow-md transition-all duration-200"
       onClick={onClick}
-      style={{ animationDelay: `${index * 0.03}s` }}
+      style={{ animationDelay: `${Math.min(index * 0.02, 0.5)}s` }}
     >
       <div className="relative h-40 sm:h-48 overflow-hidden bg-gray-100">
         {!imageLoaded && (
           <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
         )}
         <img
-          src={imageError ? getDefaultImage() : goal.image}
+          src={memoizedImage}
           alt={goal.description}
           className={`w-full h-full object-cover transition-opacity duration-200 ${
             imageLoaded ? 'opacity-100' : 'opacity-0'
@@ -69,6 +73,8 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
           onLoad={handleImageLoad}
           loading="lazy"
           decoding="async"
+          width="400"
+          height="300"
         />
         {goal.achieved && (
           <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
@@ -78,7 +84,7 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
       </div>
       <CardContent className="p-4 flex-grow flex flex-col justify-between">
         <div>
-          <p className="text-sm line-clamp-2 mb-2">{goal.description}</p>
+          <p className="text-sm line-clamp-2 mb-2 font-medium">{goal.description}</p>
           {goal.why && (
             <p className="text-xs text-muted-foreground italic line-clamp-2 mt-1">
               Why: {goal.why}
@@ -86,7 +92,7 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
           )}
         </div>
         <div className="flex items-center text-xs text-muted-foreground mt-2">
-          <Calendar className="h-3 w-3 mr-1" />
+          <Calendar className="h-3 w-3 mr-1 flex-shrink-0" />
           <span>{memoizedDate}</span>
         </div>
       </CardContent>

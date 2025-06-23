@@ -12,8 +12,7 @@ const OptimizedIndex: React.FC = () => {
 
   useEffect(() => {
     const checkMobile = () => {
-      const mobile = window.innerWidth <= 768;
-      setIsMobile(mobile);
+      setIsMobile(window.innerWidth <= 768);
     };
     
     checkMobile();
