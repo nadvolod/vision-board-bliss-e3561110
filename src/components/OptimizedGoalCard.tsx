@@ -21,6 +21,7 @@ const DEFAULT_IMAGES = [
 ];
 
 const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }) => {
+  console.time(`goal-card-${goal.id}`);
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   
@@ -39,13 +40,16 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
   }, [goal.id]);
 
   const handleImageError = useCallback(() => {
+    console.log(`🖼️ Image error for goal ${goal.id}, using fallback`);
     setImageError(true);
     setImageLoaded(true);
-  }, []);
+  }, [goal.id]);
 
   const handleImageLoad = useCallback(() => {
+    console.log(`✅ Image loaded for goal ${goal.id}`);
     setImageLoaded(true);
-  }, []);
+    console.timeEnd(`goal-card-${goal.id}`);
+  }, [goal.id]);
 
   const memoizedDate = formatDate(goal.deadline);
 

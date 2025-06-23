@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Trophy } from 'lucide-react';
 
-const FastSkeleton = () => (
+const FastSkeleton = React.memo(() => (
   <div className="h-full flex flex-col">
     <div className="h-40 sm:h-48 w-full rounded-t-lg bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
     <div className="p-4 border border-t-0 rounded-b-lg">
@@ -19,10 +19,13 @@ const FastSkeleton = () => (
       <div className="h-3 w-1/2 bg-gray-200 rounded animate-pulse" />
     </div>
   </div>
-);
+));
+
+FastSkeleton.displayName = 'FastSkeleton';
 
 const OptimizedVisionBoard: React.FC = () => {
-  console.log('OptimizedVisionBoard: Component rendering');
+  console.time('OptimizedVisionBoard-render');
+  console.log('🎨 OptimizedVisionBoard: Component rendering');
   
   const { data: goals, isLoading, error } = useOptimizedGoals();
   const [selectedGoalIndex, setSelectedGoalIndex] = useState<number | null>(null);
@@ -31,16 +34,19 @@ const OptimizedVisionBoard: React.FC = () => {
   // Ensure goals is always an array, even during loading
   const safeGoals = goals || [];
   
-  console.log('OptimizedVisionBoard: Goals data:', safeGoals.length, 'isLoading:', isLoading, 'error:', error);
+  console.log(`📊 OptimizedVisionBoard: Goals data: ${safeGoals.length}, isLoading: ${isLoading}, error:`, error);
   
   const { activeGoals, hasAchievedGoals } = useMemo(() => {
+    console.time('goals-filtering');
     if (!safeGoals || safeGoals.length === 0) {
+      console.timeEnd('goals-filtering');
       return { activeGoals: [], hasAchievedGoals: false };
     }
     
     const active = safeGoals.filter(goal => !goal.achieved);
     const hasAchieved = safeGoals.some(goal => goal.achieved);
-    console.log('OptimizedVisionBoard: Active goals:', active.length, 'Has achieved:', hasAchieved);
+    console.log(`🎯 OptimizedVisionBoard: Active goals: ${active.length}, Has achieved: ${hasAchieved}`);
+    console.timeEnd('goals-filtering');
     return { activeGoals: active, hasAchievedGoals: hasAchieved };
   }, [safeGoals]);
 
@@ -48,26 +54,26 @@ const OptimizedVisionBoard: React.FC = () => {
   const filteredGoals = useGoalFilters(activeGoals, selectedPeriod);
   
   const handleGoalClick = useCallback((index: number) => {
-    console.log('OptimizedVisionBoard: Goal clicked at index:', index);
+    console.log('🖱️ OptimizedVisionBoard: Goal clicked at index:', index);
     setSelectedGoalIndex(index);
   }, []);
   
   const handleCloseViewer = useCallback(() => {
-    console.log('OptimizedVisionBoard: Closing viewer');
+    console.log('❌ OptimizedVisionBoard: Closing viewer');
     setSelectedGoalIndex(null);
   }, []);
   
   const handleNextGoal = useCallback(() => {
     if (selectedGoalIndex === null || filteredGoals.length === 0) return;
     const nextIndex = (selectedGoalIndex + 1) % filteredGoals.length;
-    console.log('OptimizedVisionBoard: Next goal, index:', nextIndex);
+    console.log('➡️ OptimizedVisionBoard: Next goal, index:', nextIndex);
     setSelectedGoalIndex(nextIndex);
   }, [selectedGoalIndex, filteredGoals.length]);
   
   const handlePreviousGoal = useCallback(() => {
     if (selectedGoalIndex === null || filteredGoals.length === 0) return;
     const prevIndex = (selectedGoalIndex - 1 + filteredGoals.length) % filteredGoals.length;
-    console.log('OptimizedVisionBoard: Previous goal, index:', prevIndex);
+    console.log('⬅️ OptimizedVisionBoard: Previous goal, index:', prevIndex);
     setSelectedGoalIndex(prevIndex);
   }, [selectedGoalIndex, filteredGoals.length]);
   
@@ -75,19 +81,20 @@ const OptimizedVisionBoard: React.FC = () => {
     const goal = selectedGoalIndex !== null && filteredGoals[selectedGoalIndex] 
       ? filteredGoals[selectedGoalIndex] 
       : null;
-    console.log('OptimizedVisionBoard: Selected goal:', goal?.id || 'none');
+    console.log('🎯 OptimizedVisionBoard: Selected goal:', goal?.id || 'none');
     return goal;
   }, [selectedGoalIndex, filteredGoals]);
 
   const handlePeriodChange = useCallback((period: FilterPeriod) => {
-    console.log('OptimizedVisionBoard: Changing filter period to:', period);
+    console.log('📅 OptimizedVisionBoard: Changing filter period to:', period);
     setSelectedPeriod(period);
     setSelectedGoalIndex(null); // Reset selection when filter changes
   }, []);
 
   // Handle error state
   if (error) {
-    console.error('OptimizedVisionBoard: Error loading goals:', error);
+    console.error('💥 OptimizedVisionBoard: Error loading goals:', error);
+    console.timeEnd('OptimizedVisionBoard-render');
     return (
       <div className="flex flex-col items-center justify-center h-[60vh]">
         <div className="text-center max-w-md">
@@ -102,7 +109,8 @@ const OptimizedVisionBoard: React.FC = () => {
 
   // Handle loading state
   if (isLoading || !goals) {
-    console.log('OptimizedVisionBoard: Showing loading state');
+    console.log('⏳ OptimizedVisionBoard: Showing loading state');
+    console.timeEnd('OptimizedVisionBoard-render');
     return (
       <div className="flex flex-col h-full">
         <div className="flex justify-between items-center px-4 py-3 border-b">
@@ -118,7 +126,8 @@ const OptimizedVisionBoard: React.FC = () => {
     );
   }
 
-  console.log('OptimizedVisionBoard: Rendering main content');
+  console.log('✅ OptimizedVisionBoard: Rendering main content');
+  console.timeEnd('OptimizedVisionBoard-render');
 
   return (
     <div className="flex flex-col h-full">

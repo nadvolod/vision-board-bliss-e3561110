@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, ReactNode } from "react";
 import { Goal } from "../types";
 import { useToast } from "@/components/ui/use-toast";
@@ -27,19 +28,22 @@ export const useOptimizedGoalContext = () => {
 };
 
 export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  console.log('🔄 OptimizedGoalProvider: Initializing context');
   const { data: goals = [], isLoading } = useOptimizedGoals();
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const invalidateAndRefetch = () => {
+    console.log('🔄 Invalidating and refetching goals cache');
     queryClient.invalidateQueries({ queryKey: ['goals', user?.id] });
     queryClient.refetchQueries({ queryKey: ['goals', user?.id] });
   };
 
   const addGoalMutation = useMutation({
     mutationFn: async (newGoal: Omit<Goal, "id" | "createdAt" | "achieved" | "achievedAt">) => {
-      console.log('OptimizedGoalContext: Starting addGoal mutation');
+      console.time('addGoal-mutation');
+      console.log('➕ OptimizedGoalContext: Starting addGoal mutation');
       if (!user) throw new Error("User not authenticated");
 
       const { data, error } = await supabase
@@ -56,16 +60,18 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         .single();
 
       if (error) {
-        console.error('OptimizedGoalContext: Supabase error in addGoal:', error);
+        console.error('❌ OptimizedGoalContext: Supabase error in addGoal:', error);
+        console.timeEnd('addGoal-mutation');
         throw error;
       }
 
-      console.log('OptimizedGoalContext: Goal added successfully:', data);
+      console.log('✅ OptimizedGoalContext: Goal added successfully:', data);
+      console.timeEnd('addGoal-mutation');
       return data;
     },
     onMutate: async (newGoal) => {
-      // Optimistic update
-      console.log('OptimizedGoalContext: Performing optimistic update');
+      console.time('addGoal-optimistic');
+      console.log('⚡ OptimizedGoalContext: Performing optimistic update');
       await queryClient.cancelQueries({ queryKey: ['goals', user?.id] });
       
       const previousGoals = queryClient.getQueryData(['goals', user?.id]);
@@ -86,10 +92,11 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         return [optimisticGoal, ...(old || [])];
       });
       
+      console.timeEnd('addGoal-optimistic');
       return { previousGoals };
     },
     onSuccess: (data) => {
-      console.log('OptimizedGoalContext: addGoal succeeded, refreshing data');
+      console.log('✅ OptimizedGoalContext: addGoal succeeded, refreshing data');
       invalidateAndRefetch();
       toast({
         title: "Goal added",
@@ -97,7 +104,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
       });
     },
     onError: (error: any, newGoal, context) => {
-      console.error('OptimizedGoalContext: addGoal error:', error);
+      console.error('💥 OptimizedGoalContext: addGoal error:', error);
       // Rollback optimistic update
       if (context?.previousGoals) {
         queryClient.setQueryData(['goals', user?.id], context.previousGoals);
@@ -112,13 +119,18 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
 
   const deleteGoalMutation = useMutation({
     mutationFn: async (id: string) => {
-      console.log('OptimizedGoalContext: Deleting goal:', id);
+      console.time('deleteGoal-mutation');
+      console.log('🗑️ OptimizedGoalContext: Deleting goal:', id);
       const { error } = await supabase
         .from("user_goals")
         .delete()
         .eq("id", id);
 
-      if (error) throw error;
+      if (error) {
+        console.timeEnd('deleteGoal-mutation');
+        throw error;
+      }
+      console.timeEnd('deleteGoal-mutation');
     },
     onMutate: async (deletedId) => {
       // Optimistic update
@@ -133,7 +145,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
       return { previousGoals };
     },
     onSuccess: () => {
-      console.log('OptimizedGoalContext: deleteGoal succeeded');
+      console.log('✅ OptimizedGoalContext: deleteGoal succeeded');
       invalidateAndRefetch();
       toast({
         title: "Goal removed",
@@ -141,7 +153,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
       });
     },
     onError: (error: any, deletedId, context) => {
-      console.error('OptimizedGoalContext: deleteGoal error:', error);
+      console.error('💥 OptimizedGoalContext: deleteGoal error:', error);
       // Rollback optimistic update
       if (context?.previousGoals) {
         queryClient.setQueryData(['goals', user?.id], context.previousGoals);
@@ -156,6 +168,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
 
   const updateGoalMutation = useMutation({
     mutationFn: async (updatedGoal: Goal) => {
+      console.time('updateGoal-mutation');
       const { error } = await supabase
         .from("user_goals")
         .update({
@@ -166,7 +179,11 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         })
         .eq("id", updatedGoal.id);
 
-      if (error) throw error;
+      if (error) {
+        console.timeEnd('updateGoal-mutation');
+        throw error;
+      }
+      console.timeEnd('updateGoal-mutation');
     },
     onSuccess: () => {
       invalidateAndRefetch();
@@ -186,6 +203,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
 
   const markAsAchievedMutation = useMutation({
     mutationFn: async (id: string) => {
+      console.time('markAsAchieved-mutation');
       const now = new Date().toISOString();
       const { error } = await supabase
         .from("user_goals")
@@ -195,7 +213,11 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         })
         .eq("id", id);
 
-      if (error) throw error;
+      if (error) {
+        console.timeEnd('markAsAchieved-mutation');
+        throw error;
+      }
+      console.timeEnd('markAsAchieved-mutation');
     },
     onSuccess: () => {
       invalidateAndRefetch();

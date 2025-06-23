@@ -6,25 +6,44 @@ import UploadModal from '../components/UploadModal';
 import { useAuth } from '../context/AuthContext';
 
 const OptimizedIndex: React.FC = () => {
+  console.time('OptimizedIndex-mount');
+  console.log('🏠 OptimizedIndex: Component mounting');
+  
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const { user } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    console.time('mobile-detection');
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      console.log(`📱 Mobile detection: ${mobile}`);
     };
     
     checkMobile();
     window.addEventListener('resize', checkMobile);
+    console.timeEnd('mobile-detection');
     
     return () => {
       window.removeEventListener('resize', checkMobile);
     };
   }, []);
 
-  const openUploadModal = () => setIsUploadModalOpen(true);
-  const closeUploadModal = () => setIsUploadModalOpen(false);
+  useEffect(() => {
+    console.log(`👤 User state: ${user ? 'authenticated' : 'not authenticated'}`);
+    console.timeEnd('OptimizedIndex-mount');
+  }, [user]);
+
+  const openUploadModal = () => {
+    console.log('📝 Opening upload modal');
+    setIsUploadModalOpen(true);
+  };
+  
+  const closeUploadModal = () => {
+    console.log('❌ Closing upload modal');
+    setIsUploadModalOpen(false);
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
