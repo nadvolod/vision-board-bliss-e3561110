@@ -1,15 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { Trophy } from 'lucide-react';
-import React, { Suspense, lazy, useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useGoalFilters } from '../hooks/useGoalFilters';
 import { useOptimizedGoals } from '../hooks/useOptimizedGoals';
 import { Goal } from '../types';
 import GoalFilters, { FilterPeriod } from './GoalFilters';
 import OptimizedGoalCard from './OptimizedGoalCard';
-
-// Lazy load ViewGoal to reduce initial bundle size
-const ViewGoal = lazy(() => import('./ViewGoal'));
+// Import ViewGoal directly instead of lazy loading for faster initial render
+import ViewGoal from './ViewGoal';
 
 const SkeletonCard = React.memo(() => (
   <div className="h-full flex flex-col animate-pulse">
@@ -27,7 +26,7 @@ SkeletonCard.displayName = 'SkeletonCard';
 const EmptyState = React.memo<{ hasAchievedGoals: boolean; isFiltered?: boolean }>(
   ({ hasAchievedGoals, isFiltered = false }) => (
     <div className="flex flex-col items-center justify-center h-full min-h-[60vh]">
-      <div className="text-center max-w-md animate-float">
+      <div className="text-center max-w-md">
         <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-vision-purple to-vision-teal bg-clip-text text-transparent">
           {isFiltered ? "No goals in this time period" : "Welcome to Your Vision Board"}
         </h2>
@@ -60,19 +59,18 @@ const EmptyState = React.memo<{ hasAchievedGoals: boolean; isFiltered?: boolean 
 EmptyState.displayName = 'EmptyState';
 
 const OptimizedVisionBoard: React.FC = () => {
-  const { data: goals, isLoading, error } = useOptimizedGoals();
+  const { data: goals = [], isLoading, error } = useOptimizedGoals(); // Provide default value
   const [selectedGoalIndex, setSelectedGoalIndex] = useState<number | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<FilterPeriod>('all');
   
   const { activeGoals, hasAchievedGoals } = useMemo(() => {
-    const safeGoals = goals || [];
-    
-    if (safeGoals.length === 0) {
+    // Early return for empty goals to avoid unnecessary computation
+    if (!goals || goals.length === 0) {
       return { activeGoals: [], hasAchievedGoals: false };
     }
     
-    const active = safeGoals.filter(goal => !goal.achieved);
-    const hasAchieved = safeGoals.some(goal => goal.achieved);
+    const active = goals.filter(goal => !goal.achieved);
+    const hasAchieved = goals.some(goal => goal.achieved);
     return { activeGoals: active, hasAchievedGoals: hasAchieved };
   }, [goals]);
 
@@ -109,22 +107,21 @@ const OptimizedVisionBoard: React.FC = () => {
     setSelectedGoalIndex(null);
   }, []);
 
+  // Simplified error state without heavy button that requires user interaction
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh]">
         <div className="text-center max-w-md">
           <h2 className="text-2xl font-bold mb-2 text-red-600">Error Loading Goals</h2>
           <p className="text-muted-foreground mb-4">
-            There was a problem loading your vision board. Please try refreshing the page.
+            Please refresh the page to try again.
           </p>
-          <Button onClick={() => window.location.reload()} variant="outline">
-            Refresh Page
-          </Button>
         </div>
       </div>
     );
   }
 
+  // Simplified loading state with fewer skeleton cards for faster render
   if (isLoading) {
     return (
       <div className="flex flex-col h-full">
@@ -133,7 +130,7 @@ const OptimizedVisionBoard: React.FC = () => {
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-          {Array.from({ length: 8 }, (_, index) => (
+          {Array.from({ length: 4 }, (_, index) => (
             <SkeletonCard key={index} />
           ))}
         </div>
@@ -184,14 +181,13 @@ const OptimizedVisionBoard: React.FC = () => {
         )}
       </div>
       
-      <Suspense fallback={<div>Loading...</div>}>
-        <ViewGoal
-          goal={selectedGoal}
-          onClose={handleCloseViewer}
-          onNext={handleNextGoal}
-          onPrevious={handlePreviousGoal}
-        />
-      </Suspense>
+      {/* Removed Suspense wrapper for faster render */}
+      <ViewGoal
+        goal={selectedGoal}
+        onClose={handleCloseViewer}
+        onNext={handleNextGoal}
+        onPrevious={handlePreviousGoal}
+      />
     </div>
   );
 };

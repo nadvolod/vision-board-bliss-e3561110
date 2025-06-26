@@ -1,8 +1,7 @@
-
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Goal, UserGoal } from '@/types';
+import { useQuery } from '@tanstack/react-query';
 
 export const useOptimizedGoals = () => {
   const { user } = useAuth();
@@ -38,12 +37,15 @@ export const useOptimizedGoals = () => {
       return mappedData;
     },
     enabled: !!user,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 30 * 60 * 1000, // 30 minutes cache
+    // More aggressive caching for faster loads
+    staleTime: 10 * 60 * 1000, // 10 minutes - data stays fresh longer
+    gcTime: 60 * 60 * 1000, // 1 hour cache
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    refetchOnReconnect: true,
-    retry: 2,
-    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+    refetchOnReconnect: false, // Don't refetch on reconnect for faster loads
+    retry: 1, // Reduce retries for faster fail-fast
+    retryDelay: 1000, // Faster retry
+    // Enable placeholderData for instant loading
+    placeholderData: [],
   });
 };
