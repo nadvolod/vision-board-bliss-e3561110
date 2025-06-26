@@ -1,13 +1,12 @@
-
-import React, { useState, useMemo, useCallback, Suspense, lazy } from 'react';
-import { useOptimizedGoals } from '../hooks/useOptimizedGoals';
-import { useGoalFilters } from '../hooks/useGoalFilters';
-import OptimizedGoalCard from './OptimizedGoalCard';
-import GoalFilters, { FilterPeriod } from './GoalFilters';
-import { Goal } from '../types';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Trophy } from 'lucide-react';
+import React, { Suspense, lazy, useCallback, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useGoalFilters } from '../hooks/useGoalFilters';
+import { useOptimizedGoals } from '../hooks/useOptimizedGoals';
+import { Goal } from '../types';
+import GoalFilters, { FilterPeriod } from './GoalFilters';
+import OptimizedGoalCard from './OptimizedGoalCard';
 
 // Lazy load ViewGoal to reduce initial bundle size
 const ViewGoal = lazy(() => import('./ViewGoal'));
@@ -65,17 +64,17 @@ const OptimizedVisionBoard: React.FC = () => {
   const [selectedGoalIndex, setSelectedGoalIndex] = useState<number | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<FilterPeriod>('all');
   
-  const safeGoals = goals || [];
-  
   const { activeGoals, hasAchievedGoals } = useMemo(() => {
-    if (!safeGoals || safeGoals.length === 0) {
+    const safeGoals = goals || [];
+    
+    if (safeGoals.length === 0) {
       return { activeGoals: [], hasAchievedGoals: false };
     }
     
     const active = safeGoals.filter(goal => !goal.achieved);
     const hasAchieved = safeGoals.some(goal => goal.achieved);
     return { activeGoals: active, hasAchievedGoals: hasAchieved };
-  }, [safeGoals]);
+  }, [goals]);
 
   const filteredGoals = useGoalFilters(activeGoals, selectedPeriod);
   

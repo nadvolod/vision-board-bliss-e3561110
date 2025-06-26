@@ -1,27 +1,14 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Header from '../components/Header';
 import OptimizedVisionBoard from '../components/OptimizedVisionBoard';
 import UploadModal from '../components/UploadModal';
 import { useAuth } from '../context/AuthContext';
+import { useIsMobile } from '../hooks/use-mobile';
 
 const OptimizedIndex: React.FC = () => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const { user } = useAuth();
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-    };
-  }, []);
+  const isMobile = useIsMobile();
 
   const openUploadModal = () => {
     setIsUploadModalOpen(true);

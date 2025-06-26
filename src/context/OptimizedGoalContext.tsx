@@ -1,11 +1,11 @@
-
-import React, { createContext, useContext, ReactNode } from "react";
-import { Goal } from "../types";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "../integrations/supabase/client";
-import { useAuth } from "./AuthContext";
-import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { PostgrestError } from '@supabase/supabase-js';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { createContext, ReactNode, useContext } from "react";
 import { useOptimizedGoals } from '../hooks/useOptimizedGoals';
+import { supabase } from "../integrations/supabase/client";
+import { Goal } from "../types";
+import { useAuth } from "./AuthContext";
 
 interface OptimizedGoalContextType {
   goals: Goal[];
@@ -64,10 +64,11 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         description: "Your vision has been added to your board",
       });
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      const dbError = error as PostgrestError;
       toast({
         title: "Error adding goal",
-        description: error.message,
+        description: dbError.message,
         variant: "destructive",
       });
     },
@@ -89,10 +90,11 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         description: "Your vision has been removed from your board",
       });
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      const dbError = error as PostgrestError;
       toast({
         title: "Error removing goal",
-        description: error.message,
+        description: dbError.message,
         variant: "destructive",
       });
     },
@@ -119,10 +121,11 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         description: "Your vision has been updated",
       });
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      const dbError = error as PostgrestError;
       toast({
         title: "Error updating goal",
-        description: error.message,
+        description: dbError.message,
         variant: "destructive",
       });
     },
@@ -148,10 +151,11 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         description: "You've achieved your goal!",
       });
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      const dbError = error as PostgrestError;
       toast({
         title: "Error updating goal",
-        description: error.message,
+        description: dbError.message,
         variant: "destructive",
       });
     },

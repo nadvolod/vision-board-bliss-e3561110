@@ -1,18 +1,10 @@
-
-import React, { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card";
 import {
   Form,
@@ -24,13 +16,20 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/context/AuthContext";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from 'lucide-react';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Navigate, useNavigate } from "react-router-dom";
+import { z } from "zod";
 
-const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long" }),
+const authSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
 });
+
+type AuthFormData = z.infer<typeof authSchema>;
 
 const Auth = () => {
   const { signIn, signUp, user } = useAuth();
@@ -38,27 +37,28 @@ const Auth = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
 
-  // If user is already logged in, redirect to app page
-  if (user) {
-    return <Navigate to="/app" />;
-  }
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  // Always call hooks at the top level
+  const form = useForm<AuthFormData>({
+    resolver: zodResolver(authSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  // If user is already logged in, redirect to app page
+  if (user) {
+    return <Navigate to="/app" />;
+  }
+
+  const onSubmit = async (data: AuthFormData) => {
     setIsLoading(true);
     try {
       if (activeTab === "login") {
-        await signIn(values.email, values.password);
+        await signIn(data.email, data.password);
         navigate("/app");
       } else {
-        await signUp(values.email, values.password);
+        await signUp(data.email, data.password);
         // Don't redirect after signup as they need to verify email
       }
     } catch (error) {
@@ -66,6 +66,11 @@ const Auth = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const toggleMode = () => {
+    setActiveTab(activeTab === "login" ? "signup" : "login");
+    form.reset();
   };
 
   return (
@@ -93,7 +98,7 @@ const Auth = () => {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="your@email.com" {...field} />
+                          <Input placeholder="your@email.com" {...field} disabled={isLoading} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -106,14 +111,14 @@ const Auth = () => {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="••••••••" {...field} />
+                          <Input type="password" placeholder="••••••••" {...field} disabled={isLoading} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Signing in..." : "Sign In"}
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Sign In"}
                   </Button>
                 </form>
               </Form>
@@ -128,7 +133,7 @@ const Auth = () => {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="your@email.com" {...field} />
+                          <Input placeholder="your@email.com" {...field} disabled={isLoading} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -141,25 +146,32 @@ const Auth = () => {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="••••••••" {...field} />
+                          <Input type="password" placeholder="••••••••" {...field} disabled={isLoading} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Creating account..." : "Create account"}
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Create account"}
                   </Button>
                 </form>
               </Form>
             </TabsContent>
           </Tabs>
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={toggleMode}
+              className="text-sm text-blue-600 hover:text-blue-800 underline"
+              disabled={isLoading}
+            >
+              {activeTab === "login"
+                ? "Don't have an account? Click Sign Up above"
+                : "Already have an account? Click Login above"}
+            </button>
+          </div>
         </CardContent>
-        <CardFooter className="text-center text-sm text-muted-foreground">
-          {activeTab === "login"
-            ? "Don't have an account? Click Sign Up above"
-            : "Already have an account? Click Login above"}
-        </CardFooter>
       </Card>
     </div>
   );

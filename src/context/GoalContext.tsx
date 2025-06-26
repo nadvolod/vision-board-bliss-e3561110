@@ -1,8 +1,8 @@
-
-import React, { createContext, useState, useContext, useEffect, ReactNode } from "react";
-import { Goal, UserGoal } from "../types";
 import { useToast } from "@/components/ui/use-toast";
+import { PostgrestError } from '@supabase/supabase-js';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { supabase } from "../integrations/supabase/client";
+import { Goal, UserGoal } from "../types";
 import { useAuth } from "./AuthContext";
 
 interface GoalContextType {
@@ -67,11 +67,12 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           }));
           setGoals(formattedGoals);
         }
-      } catch (error: any) {
-        console.error("Error fetching goals:", error.message);
+      } catch (error) {
+        const dbError = error as PostgrestError;
+        console.error("Error fetching goals:", dbError.message);
         toast({
           title: "Error fetching goals",
-          description: error.message,
+          description: dbError.message,
           variant: "destructive",
         });
       } finally {
@@ -128,11 +129,12 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           description: "Your vision has been added to your board",
         });
       }
-    } catch (error: any) {
-      console.error("Error adding goal:", error.message);
+    } catch (error) {
+      const dbError = error as PostgrestError;
+      console.error("Error adding goal:", dbError.message);
       toast({
         title: "Error adding goal",
-        description: error.message,
+        description: dbError.message,
         variant: "destructive",
       });
     }
@@ -156,11 +158,12 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         title: "Goal removed",
         description: "Your vision has been removed from your board",
       });
-    } catch (error: any) {
-      console.error("Error deleting goal:", error.message);
+    } catch (error) {
+      const dbError = error as PostgrestError;
+      console.error("Error deleting goal:", dbError.message);
       toast({
         title: "Error removing goal",
-        description: error.message,
+        description: dbError.message,
         variant: "destructive",
       });
     }
@@ -189,11 +192,12 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         title: "Goal updated",
         description: "Your vision has been updated",
       });
-    } catch (error: any) {
-      console.error("Error updating goal:", error.message);
+    } catch (error) {
+      const dbError = error as PostgrestError;
+      console.error("Error updating goal:", dbError.message);
       toast({
         title: "Error updating goal",
-        description: error.message,
+        description: dbError.message,
         variant: "destructive",
       });
     }
@@ -228,11 +232,12 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         title: "Congratulations! 🎉",
         description: "You've achieved your goal!",
       });
-    } catch (error: any) {
-      console.error("Error marking goal as achieved:", error.message);
+    } catch (error) {
+      const dbError = error as PostgrestError;
+      console.error("Error marking goal as achieved:", dbError.message);
       toast({
         title: "Error updating goal",
-        description: error.message,
+        description: dbError.message,
         variant: "destructive",
       });
     }

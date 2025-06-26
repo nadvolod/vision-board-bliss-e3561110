@@ -1,13 +1,12 @@
-
-import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Pencil, Trash, X, MoreHorizontal } from 'lucide-react';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ChevronLeft, ChevronRight, MoreHorizontal, Pencil, Trash, X } from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 interface GoalImageDisplayProps {
   image: string;
@@ -44,6 +43,28 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
   const imageRef = useRef<HTMLImageElement>(null);
   const mountedRef = useRef(true);
 
+  const getRandomDefaultImage = useCallback(() => {
+    const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGES.length);
+    return DEFAULT_IMAGES[randomIndex];
+  }, []);
+
+  const handleImageError = useCallback(() => {
+    console.log('GoalImageDisplay: Image error for:', currentImageSrc);
+    if (!hasError && mountedRef.current) {
+      setHasError(true);
+      const fallbackImage = getRandomDefaultImage();
+      setCurrentImageSrc(fallbackImage);
+      console.log('GoalImageDisplay: Switching to fallback:', fallbackImage);
+    }
+  }, [currentImageSrc, hasError, getRandomDefaultImage]);
+
+  const handleImageLoad = useCallback(() => {
+    if (mountedRef.current) {
+      setIsLoading(false);
+      console.log('GoalImageDisplay: Image loaded successfully:', currentImageSrc);
+    }
+  }, [currentImageSrc]);
+
   // Reset states when image prop changes
   useEffect(() => {
     console.log('GoalImageDisplay: Image changed to:', image);
@@ -66,7 +87,7 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
       };
       img.src = image;
     }
-  }, [image]);
+  }, [image, handleImageError]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -74,28 +95,6 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
       mountedRef.current = false;
     };
   }, []);
-
-  const getRandomDefaultImage = () => {
-    const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGES.length);
-    return DEFAULT_IMAGES[randomIndex];
-  };
-
-  const handleImageError = () => {
-    console.log('GoalImageDisplay: Image error for:', currentImageSrc);
-    if (!hasError && mountedRef.current) {
-      setHasError(true);
-      const fallbackImage = getRandomDefaultImage();
-      setCurrentImageSrc(fallbackImage);
-      console.log('GoalImageDisplay: Switching to fallback:', fallbackImage);
-    }
-  };
-
-  const handleImageLoad = () => {
-    if (mountedRef.current) {
-      setIsLoading(false);
-      console.log('GoalImageDisplay: Image loaded successfully:', currentImageSrc);
-    }
-  };
 
   const handleEditClick = () => {
     console.log('Edit button clicked in GoalImageDisplay');

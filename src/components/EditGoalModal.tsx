@@ -1,12 +1,11 @@
-
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { DatePicker } from '@/components/ui/date-picker';
-import { parseISO } from 'date-fns';
 import { useOptimizedGoalContext } from '@/context/OptimizedGoalContext';
+import { parseISO } from 'date-fns';
+import React, { useEffect, useState } from 'react';
 import { Goal } from '../types';
 
 interface EditGoalModalProps {
@@ -22,12 +21,9 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [isUpdating, setIsUpdating] = useState(false);
 
-  console.log('EditGoalModal render - isOpen:', isOpen, 'goal:', goal?.id);
-
   // Reset form when goal changes or modal opens
   useEffect(() => {
     if (goal && isOpen) {
-      console.log('Resetting form with goal data:', goal);
       setDescription(goal.description);
       setWhy(goal.why || '');
       try {
@@ -38,7 +34,7 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
     }
   }, [goal, isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!goal || !date || !description.trim()) {
@@ -47,17 +43,20 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
     
     setIsUpdating(true);
     
-    setTimeout(() => {
-      updateGoal({
+    try {
+      await updateGoal({
         ...goal,
         description: description.trim(),
         why: why.trim() || undefined,
         deadline: date.toISOString(),
       });
       
-      setIsUpdating(false);
       onClose();
-    }, 300);
+    } catch (error) {
+      console.error('Error updating goal:', error);
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -83,6 +82,7 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
                 onChange={(e) => setDescription(e.target.value)}
                 required
                 className="min-h-[100px] resize-none"
+                disabled={isUpdating}
               />
             </div>
             
@@ -94,6 +94,7 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
                 value={why}
                 onChange={(e) => setWhy(e.target.value)}
                 className="min-h-[100px] resize-none"
+                disabled={isUpdating}
               />
             </div>
             
@@ -103,11 +104,14 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
                 date={date}
                 onSelect={setDate}
                 placeholder="Pick your target date"
+                disabled={isUpdating}
               />
             </div>
             
             <div className="flex justify-end gap-2 pt-2">
-              <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+              <Button type="button" variant="outline" onClick={onClose} disabled={isUpdating}>
+                Cancel
+              </Button>
               <Button 
                 type="submit" 
                 disabled={isUpdating || !description.trim() || !date}

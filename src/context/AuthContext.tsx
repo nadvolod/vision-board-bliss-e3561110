@@ -1,9 +1,8 @@
-
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { Session, User } from "@supabase/supabase-js";
-import { supabase } from "../integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { AuthError, Session, User } from "@supabase/supabase-js";
+import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { toast as sonnerToast } from "sonner";
+import { supabase } from "../integrations/supabase/client";
 
 interface AuthContextType {
   session: Session | null;
@@ -67,10 +66,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
 
       if (error) throw error;
-    } catch (error: any) {
+    } catch (error) {
+      const authError = error as AuthError;
       toast({
         title: "Error signing in",
-        description: error.message,
+        description: authError.message,
         variant: "destructive",
       });
       throw error;
@@ -105,10 +105,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       );
       
       console.log("Sign up data:", data);
-    } catch (error: any) {
+    } catch (error) {
+      const authError = error as AuthError;
       toast({
         title: "Error signing up",
-        description: error.message,
+        description: authError.message,
         variant: "destructive",
       });
       throw error;
@@ -121,10 +122,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       toast({
         title: "Signed out successfully",
       });
-    } catch (error: any) {
+    } catch (error) {
+      const authError = error as AuthError;
       toast({
         title: "Error signing out",
-        description: error.message,
+        description: authError.message,
         variant: "destructive",
       });
     }
