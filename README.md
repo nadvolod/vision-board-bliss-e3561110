@@ -160,6 +160,10 @@ CREATE POLICY "Users can delete own goals" ON user_goals
 # Install test dependencies
 npx playwright install
 
+# Set up test environment variables (required for E2E tests)
+export TEST_EMAIL=your_test_email@example.com
+export TEST_PASSWORD=your_test_password
+
 # Run all tests
 npm run test
 
@@ -169,6 +173,18 @@ npm run test:ui
 # Run tests with debug output
 npm run test:debug
 ```
+
+### Test Environment Setup
+
+For E2E tests to run, you need to provide test credentials via environment variables:
+
+```bash
+# Create .env.local for local testing
+echo "TEST_EMAIL=your_test_email@example.com" >> .env.local
+echo "TEST_PASSWORD=your_test_password" >> .env.local
+```
+
+**Note**: Tests will be skipped if credentials are not provided, ensuring the application doesn't expose sensitive information.
 
 ### Test Coverage
 
@@ -185,8 +201,11 @@ The project includes a comprehensive GitHub Actions pipeline:
 - **Linting**: ESLint and TypeScript checking
 - **Building**: Production build verification
 - **Testing**: E2E tests with Playwright
-- **Performance**: Lighthouse audits with score thresholds
-- **Security**: Dependency vulnerability scanning
+- **Performance**: Lighthouse audits for performance monitoring
+
+**CI/CD Environment Setup**: Set the following secrets in your GitHub repository:
+- `TEST_EMAIL`: Email for test user account
+- `TEST_PASSWORD`: Password for test user account
 
 ## 📱 Usage Guide
 

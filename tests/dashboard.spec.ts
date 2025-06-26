@@ -1,10 +1,16 @@
 import { expect, test } from '@playwright/test';
 
-const testEmail = process.env.TEST_EMAIL || 'nadvolod@gmail.com';
-const testPassword = process.env.TEST_PASSWORD || 'Test12345!';
+// Test credentials must be provided via environment variables
+const testEmail = process.env.TEST_EMAIL;
+const testPassword = process.env.TEST_PASSWORD;
 
 test.describe('Dashboard Login and Performance Tests', () => {
   test.beforeEach(async ({ page }) => {
+    // Skip tests if credentials are not provided
+    if (!testEmail || !testPassword) {
+      test.skip(true, 'Test credentials not provided via environment variables');
+    }
+    
     // Set up performance timing
     await page.addInitScript(() => {
       window.performance.mark('dashboard-test-start');
@@ -16,8 +22,8 @@ test.describe('Dashboard Login and Performance Tests', () => {
     
     // Login
     await page.goto('/auth');
-    await page.fill('input[name="email"]', testEmail);
-    await page.fill('input[name="password"]', testPassword);
+    await page.fill('input[name="email"]', testEmail!);
+    await page.fill('input[name="password"]', testPassword!);
     
     const loginStartTime = Date.now();
     await page.click('button[type="submit"]');
@@ -121,8 +127,8 @@ test.describe('Dashboard Login and Performance Tests', () => {
   test('should handle image loading errors gracefully', async ({ page }) => {
     // Login first
     await page.goto('/auth');
-    await page.fill('input[name="email"]', testEmail);
-    await page.fill('input[name="password"]', testPassword);
+    await page.fill('input[name="email"]', testEmail!);
+    await page.fill('input[name="password"]', testPassword!);
     await page.click('button[type="submit"]');
     await page.waitForURL(/\/app/, { timeout: 10000 });
     
@@ -160,8 +166,8 @@ test.describe('Dashboard Login and Performance Tests', () => {
     
     // Login
     await page.goto('/auth');
-    await page.fill('input[name="email"]', testEmail);
-    await page.fill('input[name="password"]', testPassword);
+    await page.fill('input[name="email"]', testEmail!);
+    await page.fill('input[name="password"]', testPassword!);
     await page.click('button[type="submit"]');
     await page.waitForURL(/\/app/, { timeout: 10000 });
     
