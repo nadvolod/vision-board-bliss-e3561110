@@ -43,14 +43,33 @@ export default defineConfig(({ mode }) => ({
       compress: {
         drop_console: true,
         drop_debugger: true,
+        pure_funcs: ['console.log', 'console.warn'],
+        passes: 2,
       },
       format: {
         comments: false,
       },
+      mangle: {
+        safari10: true,
+      },
     },
+    // Target modern browsers for smaller bundle
+    target: 'es2020',
   },
   // Enable gzip compression equivalent
   esbuild: {
-    drop: ['console', 'debugger'],
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
+    target: 'es2020',
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      '@tanstack/react-query',
+      '@supabase/supabase-js',
+    ],
+    exclude: ['@vite/client', '@vite/env'],
   },
 }));

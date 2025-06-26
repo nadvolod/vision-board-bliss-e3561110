@@ -1,9 +1,8 @@
-
-import React, { useState, memo, useCallback, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { format, parseISO, isValid } from 'date-fns';
-import { Goal } from '../types';
+import { format, isValid, parseISO } from 'date-fns';
 import { Calendar, CheckCircle2 } from 'lucide-react';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { Goal } from '../types';
 
 interface OptimizedGoalCardProps {
   goal: Goal;
@@ -12,12 +11,12 @@ interface OptimizedGoalCardProps {
 }
 
 const DEFAULT_IMAGES = [
-  "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=400&auto=format&fit=crop&q=75",
-  "https://images.unsplash.com/photo-1617912187990-804dd1618f8d?w=400&auto=format&fit=crop&q=75",
-  "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&auto=format&fit=crop&q=75",
-  "https://images.unsplash.com/photo-1521791055366-0d553872125f?w=400&auto=format&fit=crop&q=75",
-  "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&auto=format&fit=crop&q=75",
-  "https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?w=400&auto=format&fit=crop&q=75",
+  "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=400&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1617912187990-804dd1618f8d?w=400&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1521791055366-0d553872125f?w=400&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?w=400&auto=format&fit=crop&q=60",
 ];
 
 const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }) => {
@@ -48,10 +47,14 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
   }, []);
 
   const memoizedDate = useMemo(() => formatDate(goal.deadline), [formatDate, goal.deadline]);
-  const memoizedImage = useMemo(() => 
-    imageError ? getDefaultImage() : goal.image, 
-    [imageError, getDefaultImage, goal.image]
-  );
+  const memoizedImage = useMemo(() => {
+    const baseUrl = imageError ? getDefaultImage() : goal.image;
+    // Optimize image URL for faster loading
+    if (baseUrl.includes('unsplash.com')) {
+      return baseUrl.includes('?') ? `${baseUrl}&w=400&q=60` : `${baseUrl}?w=400&q=60`;
+    }
+    return baseUrl;
+  }, [imageError, getDefaultImage, goal.image]);
 
   return (
     <Card
@@ -71,10 +74,11 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
           }`}
           onError={handleImageError}
           onLoad={handleImageLoad}
-          loading="lazy"
+          loading={index < 4 ? "eager" : "lazy"}
           decoding="async"
           width="400"
           height="300"
+          fetchPriority={index < 2 ? "high" : "low"}
         />
         {goal.achieved && (
           <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
