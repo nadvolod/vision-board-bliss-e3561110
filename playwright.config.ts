@@ -13,7 +13,7 @@ export default defineConfig({
   reporter: 'html',
   timeout: 30000,
   use: {
-    baseURL: 'http://localhost:8080',
+    baseURL: 'http://localhost:4173',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -25,7 +25,7 @@ export default defineConfig({
     },
   ],
 
-  // Comment out webServer for manual testing
+  // Temporarily disable webServer to avoid timeout issues
   // webServer: {
   //   command: 'npm run dev',
   //   url: 'http://localhost:5173',

@@ -1,18 +1,13 @@
-
-import React from 'react';
-import { Plus, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/AuthContext';
+import { LogOut } from 'lucide-react';
+import React from 'react';
+import { useAuth } from '../context/AuthContext';
 
-interface HeaderProps {
-  openUploadModal: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ openUploadModal }) => {
+const Header: React.FC = () => {
   const { user, signOut } = useAuth();
 
   return (
-    <header className="bg-background shadow-sm border-b z-10">
+    <header className="bg-background shadow-sm border-b z-10" data-testid="app-header">
       <div className="container mx-auto py-4 px-4 flex justify-between items-center">
         <h1 className="text-xl font-bold bg-gradient-to-r from-vision-purple to-vision-teal bg-clip-text text-transparent">
           Vision Board
@@ -21,22 +16,15 @@ const Header: React.FC<HeaderProps> = ({ openUploadModal }) => {
         <div className="flex items-center gap-2">
           {user && (
             <>
-              <span className="text-sm text-muted-foreground mr-2 hidden sm:inline-block">
+              <span className="text-sm text-muted-foreground mr-2 hidden sm:inline-block" data-testid="user-email">
                 {user.email}
               </span>
-              <Button
-                onClick={openUploadModal}
-                variant="default"
-                className="bg-vision-purple hover:bg-vision-purple/90"
-                size="sm"
-              >
-                <Plus className="h-4 w-4 mr-1" /> Add Goal
-              </Button>
               <Button
                 onClick={signOut}
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
+                data-testid="logout-button"
               >
                 <LogOut className="h-4 w-4" />
               </Button>

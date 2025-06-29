@@ -139,7 +139,7 @@ const OptimizedVisionBoard: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" data-testid="vision-board">
       <div className="flex justify-between items-center px-4 py-3 border-b bg-background sticky top-0 z-10">
         <h2 className="text-lg font-medium">My Current Goals</h2>
         {hasAchievedGoals && (
