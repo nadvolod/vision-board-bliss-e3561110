@@ -2,32 +2,20 @@
 
 A high-performance, modern vision board application built with React, TypeScript, and Supabase. Create, organize, and achieve your goals with beautiful visual boards.
 
-![Performance](https://img.shields.io/badge/Lighthouse-100%2F100-brightgreen)
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue)
 ![React](https://img.shields.io/badge/React-18+-blue)
+![Performance](https://img.shields.io/badge/Lighthouse-Optimized-green)
 
 ## ✨ Key Features
 
-- **🚀 Lightning Fast**: Perfect 100/100 Lighthouse performance scores
-- **📱 Responsive Design**: Beautiful UI that works on all devices
-- **🔐 Secure Authentication**: Powered by Supabase Auth
-- **🎨 Modern UI**: Built with Tailwind CSS and Radix UI components
-- **📊 Real-time Data**: Live updates with optimized caching
-- **🎯 Goal Tracking**: Visual progress tracking and achievements
-
-## 🏆 Performance Achievements
-
-### Core Web Vitals - All Green ✅
-- **First Contentful Paint**: 495ms (Target: <1,800ms)
-- **Largest Contentful Paint**: 505ms (Target: <2,500ms)  
-- **Cumulative Layout Shift**: 0.000 (Target: <0.1)
-- **Total Blocking Time**: 0ms (Target: <200ms)
-
-### Bundle Optimization
-- **Total Bundle Size**: 312KB (Excellent for React app)
-- **Network Requests**: 20 (Optimally minimized)
-- **Lighthouse Score**: 100/100 on all pages
+- **🚀 High Performance**: Optimized for speed with excellent Lighthouse scores
+- **📱 Responsive Design**: Beautiful UI that works seamlessly on all devices
+- **🔐 Secure Authentication**: Powered by Supabase Auth with session persistence
+- **🎨 Modern UI**: Built with Tailwind CSS and accessible Radix UI components
+- **📊 Real-time Data**: Live updates with intelligent caching strategies
+- **🎯 Goal Management**: Create, edit, and track your vision board goals
+- **🏆 Achievement Tracking**: Monitor progress and celebrate milestones
 
 ## 🚀 Quick Start
 
@@ -84,11 +72,11 @@ A high-performance, modern vision board application built with React, TypeScript
 - **React Query** - Powerful data fetching and caching
 - **React Hook Form** - Performant form handling
 
-### Performance Optimizations
-- **Manual Code Splitting** - Optimized bundle chunks
-- **Aggressive Caching** - Smart data and asset caching
-- **Image Optimization** - WebP format with lazy loading
-- **Tree Shaking** - Eliminate unused code
+### Performance Features
+- **Code Splitting** - Optimized bundle chunks
+- **Smart Caching** - Intelligent data and asset caching
+- **Image Optimization** - Efficient loading strategies
+- **Bundle Optimization** - Tree shaking and minification
 
 ## 📁 Project Structure
 
@@ -112,31 +100,21 @@ src/
 ## 🧪 Testing & Quality
 
 ### Performance Testing
-- **Lighthouse CI** - Automated performance audits
-- **Core Web Vitals** - Real user experience metrics
+- **Lighthouse CI** - Automated performance audits in CI/CD
+- **Core Web Vitals** - Real user experience monitoring
 - **Bundle Analysis** - Size optimization tracking
 
 ### Code Quality
 - **ESLint** - Code linting and best practices
 - **TypeScript** - Static type checking
-- **Prettier** - Code formatting
+- **Automated Testing** - Quality assurance pipeline
 
 ### CI/CD Pipeline
 - ✅ Code quality checks
 - ✅ TypeScript compilation
 - ✅ Production build verification
-- ✅ Lighthouse performance audits
+- ✅ Performance audits
 - ✅ Security dependency scanning
-
-## 📊 Performance Metrics
-
-| Metric | Target | Achieved | Status |
-|--------|--------|----------|--------|
-| Performance Score | ≥90 | 100/100 | ✅ Excellent |
-| First Contentful Paint | <1.8s | 495ms | ✅ Excellent |
-| Largest Contentful Paint | <2.5s | 505ms | ✅ Excellent |
-| Cumulative Layout Shift | <0.1 | 0.000 | ✅ Perfect |
-| Total Blocking Time | <200ms | 0ms | ✅ Perfect |
 
 ## 🔧 Development Scripts
 
@@ -150,9 +128,9 @@ npm run preview         # Preview production build
 npm run lint            # Run ESLint
 npm run type-check      # TypeScript compilation check
 
-# Performance
-npm run analyze         # Analyze bundle size
-npm run lighthouse      # Run Lighthouse audit
+# Testing
+npm run test            # Run test suite
+npm run test:ui         # Run tests with UI
 ```
 
 ## 🚀 Deployment
@@ -180,6 +158,17 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 VITE_ANALYTICS_ID=your_analytics_id
 ```
 
+## 🎯 Performance Goals
+
+The application is built with performance as a priority:
+
+- **Core Web Vitals**: Targeting excellent scores across all metrics
+- **Bundle Size**: Optimized for fast loading
+- **Lighthouse Scores**: Aiming for 90+ across all categories
+- **User Experience**: Fast, responsive, and reliable
+
+Current performance is monitored through automated CI/CD pipelines and can be viewed in the latest build reports.
+
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -187,25 +176,6 @@ VITE_ANALYTICS_ID=your_analytics_id
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-## 📈 Performance Optimization Features
-
-### Bundle Optimization
-- **Code Splitting**: Manual chunks by functionality
-- **Tree Shaking**: Eliminate unused code
-- **Minification**: Terser with aggressive settings
-- **Modern Target**: ES2020 for smaller bundles
-
-### Caching Strategy
-- **Long-term Caching**: Vendor chunks with content hashing
-- **React Query**: Intelligent data caching (5-15 minute stale time)
-- **Browser Caching**: Optimized cache headers
-
-### Rendering Optimization
-- **Zero CLS**: Perfect layout stability
-- **Optimized Images**: WebP format with lazy loading
-- **Minimal DOM**: Lean component structure
-- **Efficient Re-renders**: Optimized dependency arrays
 
 ## 📋 Browser Support
 
@@ -229,4 +199,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**🎯 Ready for production with world-class performance!** 🚀
+**🎯 A modern, high-performance vision board application ready for production!** 🚀
