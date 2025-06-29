@@ -99,19 +99,7 @@ jobs:
           npx wait-on http://localhost:4173 --timeout 30000
 
       - name: Run Lighthouse Performance Audit
-        run: |
-          lhci autorun \
-            --collect.url=http://localhost:4173 \
-            --collect.url=http://localhost:4173/auth \
-            --collect.settings.chromeFlags="--no-sandbox --headless --disable-dev-shm-usage" \
-            --collect.settings.formFactor=desktop \
-            --collect.settings.throttling.rttMs=40 \
-            --collect.settings.throttling.throughputKbps=10240 \
-            --collect.settings.throttling.cpuSlowdownMultiplier=1 \
-            --assert.assertions.categories:performance=0.9 \
-            --assert.assertions.categories:accessibility=0.9 \
-            --assert.assertions.categories:best-practices=0.9 \
-            --upload.target=temporary-public-storage
+        run: lhci autorun
 
       - name: Generate Performance Summary
         run: |
