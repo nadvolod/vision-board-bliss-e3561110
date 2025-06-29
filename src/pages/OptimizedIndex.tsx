@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import FloatingAddButton from '../components/FloatingAddButton';
 import Header from '../components/Header';
 import OptimizedVisionBoard from '../components/OptimizedVisionBoard';
 import UploadModal from '../components/UploadModal';
@@ -20,16 +21,19 @@ const OptimizedIndex: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header openUploadModal={openUploadModal} />
+      <Header />
       <main className={`flex-grow ${isMobile ? 'pb-20' : ''}`}>
         <OptimizedVisionBoard />
       </main>
       
       {user && (
-        <UploadModal 
-          isOpen={isUploadModalOpen}
-          onClose={closeUploadModal}
-        />
+        <>
+          <FloatingAddButton onClick={openUploadModal} />
+          <UploadModal 
+            isOpen={isUploadModalOpen}
+            onClose={closeUploadModal}
+          />
+        </>
       )}
     </div>
   );
