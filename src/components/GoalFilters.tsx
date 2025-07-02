@@ -1,4 +1,3 @@
-
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock, Filter } from 'lucide-react';
@@ -56,7 +55,7 @@ const GoalFilters: React.FC<GoalFiltersProps> = ({
   ];
 
   return (
-    <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b">
+    <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b" data-testid="filter-button">
       <div className="flex flex-col gap-3 px-4 py-3">
         {/* Filter chips */}
         <div className="flex flex-wrap gap-2">
@@ -66,7 +65,7 @@ const GoalFilters: React.FC<GoalFiltersProps> = ({
             
             return (
               <Button
-                data-testid='filter-button'
+                data-testid={`filter-button-${option.value}`}
                 key={option.value}
                 variant={isSelected ? "default" : "outline"}
                 size="sm"

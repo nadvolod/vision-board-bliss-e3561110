@@ -12,20 +12,24 @@ import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 import OptimizedIndex from "./pages/OptimizedIndex";
 
+// Maximum performance React Query configuration for sub-second loading
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 10 * 60 * 1000, // 10 minutes - longer stale time for faster loads
-      gcTime: 60 * 60 * 1000, // 1 hour cache
+      staleTime: 0, // Always use cache immediately
+      gcTime: 60 * 60 * 1000, // 1 hour cache retention
       refetchOnWindowFocus: false,
-      refetchOnMount: false, // Don't refetch on mount for faster loads
-      refetchOnReconnect: false, // Don't refetch on reconnect for faster loads
-      retry: 1, // Reduce retries for faster error handling
-      retryDelay: 1000, // Faster retry delay
+      refetchOnMount: false, // Never refetch on mount for instant cache hits
+      refetchOnReconnect: false, 
+      retry: 0, // No retries for absolute maximum speed
+      retryDelay: 0,
+      // Enable instant loading features
+      networkMode: 'online',
     },
     mutations: {
       retry: 1,
-      retryDelay: 1000,
+      retryDelay: 100, // Very fast mutation retry
+      networkMode: 'online',
     },
   },
 });

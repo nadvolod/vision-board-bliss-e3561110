@@ -8,7 +8,7 @@
 - One positive test per feature is sufficient unless more comprehensive testing is specifically requested
 
 ### Test Execution
-- **Do not display Playwright reports** in the UI
+- **Do not display Playwright reports** in the UI, run the tests in headless mode and review console results or text results. Don't pull up HTML reports
 - Run tests in the background using terminal commands
 - Analyze test results programmatically and provide summary of outcomes
 - Only show test failures or issues that need attention
