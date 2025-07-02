@@ -1,8 +1,8 @@
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Calendar, Clock, Filter } from 'lucide-react';
+import React from 'react';
 
 export type FilterPeriod = 'all' | 'next30days' | 'nextQuarter' | 'nextHalf' | 'nextYear';
 
@@ -66,6 +66,7 @@ const GoalFilters: React.FC<GoalFiltersProps> = ({
             
             return (
               <Button
+                data-testid='filter-button'
                 key={option.value}
                 variant={isSelected ? "default" : "outline"}
                 size="sm"

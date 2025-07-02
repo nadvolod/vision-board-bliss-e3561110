@@ -27,7 +27,7 @@ const EmptyState = React.memo<{ hasAchievedGoals: boolean; isFiltered?: boolean 
   ({ hasAchievedGoals, isFiltered = false }) => (
     <div className="flex flex-col items-center justify-center h-full min-h-[60vh]">
       <div className="text-center max-w-md">
-        <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-vision-purple to-vision-teal bg-clip-text text-transparent">
+        <h2 data-testid="empty-state-title" className="text-2xl font-bold mb-2 bg-gradient-to-r from-vision-purple to-vision-teal bg-clip-text text-transparent">
           {isFiltered ? "No goals in this time period" : "Welcome to Your Vision Board"}
         </h2>
         <p className="text-muted-foreground mb-4">
