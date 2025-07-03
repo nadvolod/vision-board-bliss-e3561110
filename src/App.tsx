@@ -8,6 +8,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { OptimizedGoalProvider } from "./context/OptimizedGoalContext";
 import Achievements from "./pages/Achievements";
 import Auth from "./pages/Auth";
+import Demo from "./pages/Demo";
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 import OptimizedIndex from "./pages/OptimizedIndex";
@@ -57,6 +58,11 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/wins" element={<Wins />} />
+              <Route path="/demo" element={
+                <ProtectedRoute>
+                  <Demo />
+                </ProtectedRoute>
+              } />
               <Route path="/index" element={<Navigate to="/app" replace />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

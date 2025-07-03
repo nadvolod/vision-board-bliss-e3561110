@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { LogOut, Trophy, Users } from 'lucide-react';
+import { LogOut, Trophy, Users, TestTube } from 'lucide-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -33,6 +33,12 @@ const Header: React.FC = () => {
                   <Button variant="ghost" size="sm" className="flex items-center gap-1">
                     <Users className="h-4 w-4" />
                     <span className="hidden sm:inline">Wins</span>
+                  </Button>
+                </Link>
+                <Link to="/demo">
+                  <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                    <TestTube className="h-4 w-4" />
+                    <span className="hidden sm:inline">Demo</span>
                   </Button>
                 </Link>
               </nav>
