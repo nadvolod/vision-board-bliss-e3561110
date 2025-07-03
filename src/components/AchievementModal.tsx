@@ -15,11 +15,17 @@ interface AchievementModalProps {
 
 const AchievementModal = ({ isOpen, onClose, achievement }: AchievementModalProps) => {
   const [testimonial, setTestimonial] = useState(achievement?.testimonial || '');
-  const [optInSharing, setOptInSharing] = useState(achievement?.opt_in_sharing || false);
+  const [optInSharing, setOptInSharing] = useState(achievement?.opt_in_sharing ?? true);
   const { updateAchievement } = useAchievements();
 
   const handleSubmit = async () => {
     if (!achievement) return;
+
+    // Don't try to update demo achievements (they have non-UUID IDs)
+    if (achievement.id.startsWith('demo-')) {
+      onClose();
+      return;
+    }
 
     try {
       await updateAchievement.mutateAsync({
@@ -81,14 +87,14 @@ const AchievementModal = ({ isOpen, onClose, achievement }: AchievementModalProp
           {/* Sharing Opt-in */}
           <div className="flex items-center justify-between p-4 border rounded-lg">
             <div className="space-y-1">
-              <p className="text-sm font-medium">Share anonymously</p>
+              <p className="text-sm font-medium">Don't share publicly</p>
               <p className="text-xs text-muted-foreground">
-                Allow us to feature your achievement (without personal info) to inspire others
+                Turn this on if you prefer to keep your achievement private
               </p>
             </div>
             <Switch
-              checked={optInSharing}
-              onCheckedChange={setOptInSharing}
+              checked={!optInSharing}
+              onCheckedChange={(checked) => setOptInSharing(!checked)}
             />
           </div>
 

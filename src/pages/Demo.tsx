@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,6 +13,7 @@ import { TestTube, Trophy, Users, MessageSquare, Star, Target } from 'lucide-rea
 import { useState } from 'react';
 import AchievementModal from '../components/AchievementModal';
 import NPSModal from '../components/NPSModal';
+import SocialSharePreview from '../components/SocialSharePreview';
 import WinsCarousel from '../components/WinsCarousel';
 import { useAchievements } from '../hooks/useAchievements';
 import { useFeedback } from '../hooks/useFeedback';
@@ -19,6 +21,7 @@ import { useFeedback } from '../hooks/useFeedback';
 const Demo = () => {
   const [showNPSModal, setShowNPSModal] = useState(false);
   const [showAchievementModal, setShowAchievementModal] = useState(false);
+  const [showSocialPreview, setShowSocialPreview] = useState(false);
   const [mockAchievement, setMockAchievement] = useState<UserAchievement | null>(null);
   
   // Form states for creating test achievements
@@ -44,7 +47,7 @@ const Demo = () => {
       impact_metrics: impactMetrics ? JSON.parse(impactMetrics) : null,
       testimonial: testimonial || null,
       is_featured: false,
-      opt_in_sharing: false,
+      opt_in_sharing: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -64,7 +67,7 @@ const Demo = () => {
         impact_metrics: impactMetrics ? JSON.parse(impactMetrics) : null,
         testimonial: testimonial || undefined,
         is_featured: Math.random() > 0.5, // Random for demo
-        opt_in_sharing: true, // Enable sharing for demo
+        opt_in_sharing: true, // Enable sharing by default
       });
       
       toast({
@@ -263,6 +266,33 @@ const Demo = () => {
                   {createAchievement.isPending ? 'Creating...' : 'Create Real'}
                 </Button>
               </div>
+              
+              <Button 
+                onClick={() => {
+                  const mockData: UserAchievement = {
+                    id: 'demo-' + Date.now(),
+                    user_id: 'demo-user',
+                    goal_id: 'demo-goal',
+                    achievement_type: achievementType,
+                    achievement_data: {
+                      goal_description: goalDescription,
+                      completed_at: new Date().toISOString(),
+                    },
+                    impact_metrics: impactMetrics ? JSON.parse(impactMetrics) : null,
+                    testimonial: testimonial || null,
+                    is_featured: false,
+                    opt_in_sharing: true,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                  };
+                  setMockAchievement(mockData);
+                  setShowSocialPreview(true);
+                }}
+                variant="secondary"
+                className="w-full"
+              >
+                Preview Social Share
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -355,6 +385,21 @@ const Demo = () => {
           }}
           achievement={mockAchievement}
         />
+
+        {/* Social Preview Modal */}
+        {mockAchievement && (
+          <Dialog open={showSocialPreview} onOpenChange={setShowSocialPreview}>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Social Share Preview</DialogTitle>
+                <DialogDescription>
+                  See how your achievement would appear when shared on social media
+                </DialogDescription>
+              </DialogHeader>
+              <SocialSharePreview achievement={mockAchievement} />
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </div>
   );
