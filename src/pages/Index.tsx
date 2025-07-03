@@ -29,7 +29,7 @@ const Index: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header openUploadModal={openUploadModal} />
+      <Header />
       <main className={`flex-grow ${isMobile ? 'pb-20' : ''}`}>
         <VisionBoard />
       </main>

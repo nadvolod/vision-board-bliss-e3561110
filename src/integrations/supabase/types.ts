@@ -9,6 +9,107 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      nps_feedback: {
+        Row: {
+          created_at: string
+          feedback_text: string | null
+          id: string
+          score: Database["public"]["Enums"]["nps_score"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feedback_text?: string | null
+          id?: string
+          score: Database["public"]["Enums"]["nps_score"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feedback_text?: string | null
+          id?: string
+          score?: Database["public"]["Enums"]["nps_score"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      published_wins: {
+        Row: {
+          achievement_id: string
+          id: string
+          is_active: boolean | null
+          platform: string
+          published_at: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          is_active?: boolean | null
+          platform: string
+          published_at?: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          is_active?: boolean | null
+          platform?: string
+          published_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "published_wins_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "user_achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_achievements: {
+        Row: {
+          achievement_data: Json | null
+          achievement_type: string
+          created_at: string
+          goal_id: string | null
+          id: string
+          impact_metrics: Json | null
+          is_featured: boolean | null
+          opt_in_sharing: boolean | null
+          testimonial: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_data?: Json | null
+          achievement_type: string
+          created_at?: string
+          goal_id?: string | null
+          id?: string
+          impact_metrics?: Json | null
+          is_featured?: boolean | null
+          opt_in_sharing?: boolean | null
+          testimonial?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_data?: Json | null
+          achievement_type?: string
+          created_at?: string
+          goal_id?: string | null
+          id?: string
+          impact_metrics?: Json | null
+          is_featured?: boolean | null
+          opt_in_sharing?: boolean | null
+          testimonial?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_goals: {
         Row: {
           achieved: boolean
@@ -45,6 +146,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_preferences: {
+        Row: {
+          achievement_notifications: boolean | null
+          created_at: string
+          id: string
+          last_nps_shown: string | null
+          nps_frequency_days: number | null
+          sharing_opt_in: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_notifications?: boolean | null
+          created_at?: string
+          id?: string
+          last_nps_shown?: string | null
+          nps_frequency_days?: number | null
+          sharing_opt_in?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_notifications?: boolean | null
+          created_at?: string
+          id?: string
+          last_nps_shown?: string | null
+          nps_frequency_days?: number | null
+          sharing_opt_in?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -54,9 +188,24 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      should_show_nps_survey: {
+        Args: { user_uuid: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      nps_score:
+        | "0"
+        | "1"
+        | "2"
+        | "3"
+        | "4"
+        | "5"
+        | "6"
+        | "7"
+        | "8"
+        | "9"
+        | "10"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -171,6 +320,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      nps_score: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+    },
   },
 } as const

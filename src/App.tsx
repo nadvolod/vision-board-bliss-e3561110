@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 import OptimizedIndex from "./pages/OptimizedIndex";
+import Wins from "./pages/Wins";
 
 // Maximum performance React Query configuration for sub-second loading
 const queryClient = new QueryClient({
@@ -55,6 +56,7 @@ const App = () => (
                   <Achievements />
                 </ProtectedRoute>
               } />
+              <Route path="/wins" element={<Wins />} />
               <Route path="/index" element={<Navigate to="/app" replace />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

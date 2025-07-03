@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
+import { LogOut, Trophy, Users } from 'lucide-react';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Header: React.FC = () => {
@@ -16,6 +17,26 @@ const Header: React.FC = () => {
         <div className="flex items-center gap-2">
           {user && (
             <>
+              <nav className="flex items-center gap-2 mr-4">
+                <Link to="/app">
+                  <Button variant="ghost" size="sm">
+                    Dashboard
+                  </Button>
+                </Link>
+                <Link to="/achievements">
+                  <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                    <Trophy className="h-4 w-4" />
+                    <span className="hidden sm:inline">Achievements</span>
+                  </Button>
+                </Link>
+                <Link to="/wins">
+                  <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                    <Users className="h-4 w-4" />
+                    <span className="hidden sm:inline">Wins</span>
+                  </Button>
+                </Link>
+              </nav>
+              
               <span className="text-sm text-muted-foreground mr-2 hidden sm:inline-block" data-testid="user-email">
                 {user.email}
               </span>

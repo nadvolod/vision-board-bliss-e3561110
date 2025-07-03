@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import FloatingAddButton from '../components/FloatingAddButton';
+import FeedbackManager from '../components/FeedbackManager';
 import Header from '../components/Header';
 import OptimizedVisionBoard from '../components/OptimizedVisionBoard';
 import UploadModal from '../components/UploadModal';
@@ -33,6 +34,7 @@ const OptimizedIndex: React.FC = () => {
             isOpen={isUploadModalOpen}
             onClose={closeUploadModal}
           />
+          <FeedbackManager />
         </>
       )}
     </div>

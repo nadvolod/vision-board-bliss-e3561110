@@ -7,6 +7,7 @@ import { useOptimizedGoals } from '../hooks/useOptimizedGoals';
 import { Goal } from '../types';
 import GoalFilters, { FilterPeriod } from './GoalFilters';
 import OptimizedGoalCard from './OptimizedGoalCard';
+import WinsCarousel from './WinsCarousel';
 // Import ViewGoal directly instead of lazy loading for faster initial render
 import ViewGoal from './ViewGoal';
 
@@ -181,6 +182,9 @@ const OptimizedVisionBoard: React.FC = () => {
       />
       
       <div className="flex-1 overflow-auto">
+        {/* Wins Carousel - shown when we have goals */}
+        {activeGoals.length > 0 && <WinsCarousel />}
+        
         {activeGoals.length === 0 ? (
           <EmptyState hasAchievedGoals={hasAchievedGoals} />
         ) : filteredGoals.length === 0 ? (

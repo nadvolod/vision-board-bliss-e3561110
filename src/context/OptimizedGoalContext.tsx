@@ -134,6 +134,14 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
   const markAsAchievedMutation = useMutation({
     mutationFn: async (id: string) => {
       const now = new Date().toISOString();
+      
+      // Get the goal details before marking as achieved
+      const { data: goalData } = await supabase
+        .from("user_goals")
+        .select("description")
+        .eq("id", id)
+        .single();
+
       const { error } = await supabase
         .from("user_goals")
         .update({
@@ -143,12 +151,31 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         .eq("id", id);
 
       if (error) throw error;
+
+      // Create achievement record
+      if (goalData && user) {
+        await supabase
+          .from("user_achievements")
+          .insert({
+            user_id: user.id,
+            goal_id: id,
+            achievement_type: "goal_completed",
+            achievement_data: {
+              goal_description: goalData.description,
+              completed_at: now,
+            },
+            is_featured: false,
+            opt_in_sharing: false,
+          });
+      }
     },
     onSuccess: () => {
       invalidateQueries();
+      queryClient.invalidateQueries({ queryKey: ['user-achievements', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['featured-achievements'] });
       toast({
         title: "Congratulations! 🎉",
-        description: "You've achieved your goal!",
+        description: "You've achieved your goal! 🎊",
       });
     },
     onError: (error) => {
