@@ -13,6 +13,7 @@ import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 import OptimizedIndex from "./pages/OptimizedIndex";
 import Wins from "./pages/Wins";
+import NPSAnalytics from "./pages/NPSAnalytics";
 
 // Maximum performance React Query configuration for sub-second loading
 const queryClient = new QueryClient({
@@ -58,6 +59,11 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/wins" element={<Wins />} />
+              <Route path="/nps-analytics" element={
+                <ProtectedRoute>
+                  <NPSAnalytics />
+                </ProtectedRoute>
+              } />
               <Route path="/demo" element={
                 <ProtectedRoute>
                   <Demo />
