@@ -7,6 +7,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar, ReferenceLine } from 'recharts';
 
+interface DailyScoreData {
+  scores: number[];
+  count: number;
+  total: number;
+}
+
+interface ChartDataPoint {
+  date: string;
+  average: string;
+  count: number;
+  total: number;
+}
+
 // Mock release data - in a real app, this would come from a releases table
 const mockReleases = [
   { version: '1.0.0', date: '2024-01-01', features: 'Initial launch' },
@@ -30,7 +43,7 @@ const NPSAnalytics = () => {
       if (error) throw error;
 
       // Process data for charts
-      const dailyScores = feedback?.reduce((acc: any, item) => {
+      const dailyScores = feedback?.reduce((acc: Record<string, DailyScoreData>, item) => {
         const date = format(new Date(item.created_at), 'yyyy-MM-dd');
         if (!acc[date]) {
           acc[date] = { scores: [], count: 0, total: 0 };
@@ -42,7 +55,7 @@ const NPSAnalytics = () => {
       }, {}) || {};
 
       // Convert to chart format
-      const chartData = Object.entries(dailyScores).map(([date, data]: [string, any]) => ({
+      const chartData: ChartDataPoint[] = Object.entries(dailyScores).map(([date, data]: [string, DailyScoreData]) => ({
         date,
         average: (data.total / data.count).toFixed(1),
         count: data.count,
