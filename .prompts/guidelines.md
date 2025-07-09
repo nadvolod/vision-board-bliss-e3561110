@@ -6,6 +6,7 @@
 - **Only create positive tests** unless explicitly requested to add negative tests or edge cases
 - Focus on happy path scenarios that verify features work as expected
 - One positive test per feature is sufficient unless more comprehensive testing is specifically requested
+- Keep tests as simple as possible
 
 ### Test Execution
 - **Do not display Playwright reports** in the UI, run the tests in headless mode and review console results or text results. Don't pull up HTML reports
