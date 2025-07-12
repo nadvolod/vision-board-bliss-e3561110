@@ -11,28 +11,29 @@ import Auth from "./pages/Auth";
 import Demo from "./pages/Demo";
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
+import NPSAnalytics from "./pages/NPSAnalytics";
 import OptimizedIndex from "./pages/OptimizedIndex";
 import Wins from "./pages/Wins";
-import NPSAnalytics from "./pages/NPSAnalytics";
 
-// Maximum performance React Query configuration for sub-second loading
+// Maximum performance React Query configuration for sub-second loading with offline support
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 0, // Always use cache immediately
       gcTime: 60 * 60 * 1000, // 1 hour cache retention
       refetchOnWindowFocus: false,
-      refetchOnMount: false, // Never refetch on mount for instant cache hits
+      refetchOnMount: true, // Allow refetch on mount to ensure data loads
       refetchOnReconnect: false, 
       retry: 0, // No retries for absolute maximum speed
       retryDelay: 0,
-      // Enable instant loading features
-      networkMode: 'online',
+      // Enable offline support - queries will work even when offline
+      networkMode: 'always',
     },
     mutations: {
       retry: 1,
       retryDelay: 100, // Very fast mutation retry
-      networkMode: 'online',
+      // Enable offline support for mutations
+      networkMode: 'always',
     },
   },
 });

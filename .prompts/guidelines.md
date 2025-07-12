@@ -9,7 +9,8 @@
 - Keep tests as simple as possible
 
 ### Test Execution
-- **Do not display Playwright reports** in the UI, run the tests in headless mode and review console results or text results. Don't pull up HTML reports
+- **Do not display HTML reports** in the UI, run the tests in headless mode and review console results or text results. Don't open any reports
+- Don't serve any HTML reports for tests
 - Run tests in the background using terminal commands
 - Analyze test results programmatically and provide summary of outcomes
 - Only show test failures or issues that need attention
@@ -19,6 +20,7 @@
 - Include proper test setup and cleanup
 - Use reliable selectors (preferably data-testid attributes)
 - Keep tests focused and atomic - one test per specific functionality
+- Add unique test-ids to any locators that are used in automated e2e tests
 
 ### Test Names
 - name test files after the feature they are testing and not generic file names like "bug-fix" or "new-feature"

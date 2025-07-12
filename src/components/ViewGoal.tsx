@@ -1,12 +1,12 @@
 
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Goal } from '../types';
 import { useOptimizedGoalContext } from '../context/OptimizedGoalContext';
+import { Goal } from '../types';
 import EditGoalModal from './EditGoalModal';
-import GoalImageDisplay from './GoalImageDisplay';
-import GoalDetails from './GoalDetails';
 import GoalConfirmationDialogs from './GoalConfirmationDialogs';
+import GoalDetails from './GoalDetails';
+import GoalImageDisplay from './GoalImageDisplay';
 
 interface ViewGoalProps {
   goal: Goal | null;
@@ -61,6 +61,7 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
             <GoalImageDisplay
               image={goal.image}
               description={goal.description}
+              goalId={goal.id}
               onEdit={handleEditClick}
               onDelete={() => setShowDeleteConfirm(true)}
               onNext={onNext}

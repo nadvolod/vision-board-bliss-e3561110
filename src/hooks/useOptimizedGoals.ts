@@ -5,28 +5,6 @@ import { Goal, UserGoal } from '@/types';
 import { useQuery } from '@tanstack/react-query';
 import { useOnlineStatus } from './useOnlineStatus';
 
-// Placeholder goals for instant initial rendering while real data loads
-const PLACEHOLDER_GOALS: Goal[] = [
-  {
-    id: 'placeholder-1',
-    image: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=400&auto=format&fit=crop&q=60',
-    description: 'Master React development',
-    why: 'To build amazing user interfaces',
-    deadline: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
-    createdAt: new Date().toISOString(),
-    achieved: false,
-  },
-  {
-    id: 'placeholder-2',
-    image: 'https://images.unsplash.com/photo-1617912187990-804dd1618f8d?w=400&auto=format&fit=crop&q=60',
-    description: 'Run a marathon',
-    why: 'To improve health and endurance',
-    deadline: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString(),
-    createdAt: new Date().toISOString(),
-    achieved: false,
-  }
-];
-
 export const useOptimizedGoals = () => {
   const { user } = useAuth();
   const isOnline = useOnlineStatus();
@@ -41,7 +19,8 @@ export const useOptimizedGoals = () => {
       // If offline, get goals from local storage
       if (!isOnline) {
         console.log('Offline mode: Loading goals from local storage');
-        return getGoalsFromLocalStorage(user.id);
+        const localGoals = getGoalsFromLocalStorage(user.id);
+        return localGoals;
       }
 
       try {
@@ -85,24 +64,21 @@ export const useOptimizedGoals = () => {
           return localGoals;
         }
         
-        throw error;
+        // Return empty array instead of placeholder goals
+        return [];
       }
     },
     // Enable query immediately when user is available
     enabled: !!user,
-    // Provide instant placeholder data for immediate rendering
-    initialData: user ? PLACEHOLDER_GOALS : [],
-    // Ultra-aggressive caching for instant loads
-    staleTime: 0, // Always consider data fresh for instant cache hits
-    gcTime: 30 * 60 * 1000, // 30 minutes cache retention
+    // Ultra-aggressive caching for instant loads and offline support
+    staleTime: 5 * 60 * 1000, // 5 minutes stale time to keep data fresh
+    gcTime: 60 * 60 * 1000, // 1 hour cache retention
     refetchOnWindowFocus: false,
-    refetchOnMount: true, // Allow initial fetch to replace placeholder data
-    refetchOnReconnect: true, // Refetch when reconnecting to ensure data is synced
+    refetchOnMount: true, // Allow refetch on mount to ensure data loads
+    refetchOnReconnect: true, // Refetch when reconnecting to sync data
     retry: 1, // Allow one retry for better offline resilience
     retryDelay: 1000,
-    // Enable offline support
+    // Critical: Enable offline support
     networkMode: 'always',
-    // Provide empty array for instant UI rendering
-    placeholderData: [],
   });
 };

@@ -61,7 +61,7 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
       className="vision-card cursor-pointer overflow-hidden h-full flex flex-col hover:shadow-md transition-all duration-200"
       onClick={onClick}
       style={{ animationDelay: `${Math.min(index * 0.02, 0.5)}s` }}
-      data-testid="goal-card"
+      data-testid={`goal-card-${goal.id}`}
     >
       <div className="relative h-40 sm:h-48 overflow-hidden bg-gray-100">
         {!imageLoaded && (
