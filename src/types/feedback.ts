@@ -14,8 +14,8 @@ export interface UserAchievement {
   user_id: string;
   goal_id?: string | null;
   achievement_type: string;
-  achievement_data?: any;
-  impact_metrics?: any;
+  achievement_data?: Record<string, unknown>;
+  impact_metrics?: Record<string, unknown>;
   testimonial?: string | null;
   is_featured: boolean;
   opt_in_sharing: boolean;

@@ -1,9 +1,9 @@
 import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ChevronLeft, ChevronRight, MoreHorizontal, Pencil, Trash, X } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -11,6 +11,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 interface GoalImageDisplayProps {
   image: string;
   description: string;
+  goalId?: string; // Add optional goal ID for unique test IDs
   onEdit: () => void;
   onDelete: () => void;
   onNext: () => void;
@@ -31,6 +32,7 @@ const DEFAULT_IMAGES = [
 const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
   image,
   description,
+  goalId,
   onEdit,
   onDelete,
   onNext,
@@ -119,7 +121,7 @@ const GoalImageDisplay: React.FC<GoalImageDisplayProps> = ({
           className={`w-full h-full object-cover transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
           onError={handleImageError}
           onLoad={handleImageLoad}
-          data-testid="goal-image"
+          data-testid={goalId ? `goal-image-${goalId}` : "goal-image"}
         />
         
         {/* Close button in the top right */}

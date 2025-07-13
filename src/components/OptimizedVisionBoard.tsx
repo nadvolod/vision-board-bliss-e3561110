@@ -1,11 +1,13 @@
 import { Button } from '@/components/ui/button';
-import { Trophy } from 'lucide-react';
+import { useOptimizedGoalContext } from '@/context/OptimizedGoalContext';
+import { Trophy, WifiOff } from 'lucide-react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useGoalFilters } from '../hooks/useGoalFilters';
 import { useOptimizedGoals } from '../hooks/useOptimizedGoals';
 import { Goal } from '../types';
 import GoalFilters, { FilterPeriod } from './GoalFilters';
+import OfflineIndicator from './OfflineIndicator';
 import OptimizedGoalCard from './OptimizedGoalCard';
 import WinsCarousel from './WinsCarousel';
 // Import ViewGoal directly instead of lazy loading for faster initial render
@@ -61,6 +63,7 @@ EmptyState.displayName = 'EmptyState';
 
 const OptimizedVisionBoard: React.FC = () => {
   const { data: goals = [], isLoading, error } = useOptimizedGoals(); // Provide default value
+  const { isOnline } = useOptimizedGoalContext();
   const [selectedGoalIndex, setSelectedGoalIndex] = useState<number | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<FilterPeriod>('all');
   
@@ -162,7 +165,15 @@ const OptimizedVisionBoard: React.FC = () => {
   return (
     <div className="flex flex-col h-full" data-testid="vision-board">
       <div className="flex justify-between items-center px-4 py-3 border-b bg-background sticky top-0 z-10">
-        <h2 className="text-lg font-medium">My Current Goals</h2>
+        <div className="flex items-center">
+          <h2 className="text-lg font-medium">My Current Goals</h2>
+          {!isOnline && (
+            <div className="ml-2 flex items-center text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full text-xs">
+              <WifiOff className="h-3 w-3 mr-1" />
+              Offline Mode
+            </div>
+          )}
+        </div>
         {hasAchievedGoals && (
           <Link to="/achievements">
             <Button variant="outline" className="flex items-center gap-2">
@@ -180,6 +191,12 @@ const OptimizedVisionBoard: React.FC = () => {
         onPeriodChange={handlePeriodChange}
         goalCount={filteredGoals.length}
       />
+      
+      {!isOnline && (
+        <div className="bg-yellow-50 px-4 py-2 text-sm text-yellow-800 border-b border-yellow-100">
+          <p>You're currently in offline mode. Your goals are available for viewing, and any changes will be synchronized when you're back online.</p>
+        </div>
+      )}
       
       <div className="flex-1 overflow-auto">
         {/* Wins Carousel - shown when we have goals */}
@@ -211,6 +228,9 @@ const OptimizedVisionBoard: React.FC = () => {
         onNext={handleNextGoal}
         onPrevious={handlePreviousGoal}
       />
+      
+      {/* Floating offline indicator */}
+      <OfflineIndicator />
     </div>
   );
 };

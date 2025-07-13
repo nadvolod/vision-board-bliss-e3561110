@@ -6,10 +6,19 @@ import { useOptimizedGoals } from '../hooks/useOptimizedGoals';
 import { supabase } from "../integrations/supabase/client";
 import { Goal } from "../types";
 import { useAuth } from "./AuthContext";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { 
+  addGoalToLocalStorage, 
+  deleteGoalFromLocalStorage, 
+  markGoalAsAchievedInLocalStorage, 
+  updateGoalInLocalStorage 
+} from "@/lib/offlineStorage";
+import { v4 as uuidv4 } from 'uuid';
 
 interface OptimizedGoalContextType {
   goals: Goal[];
   isLoading: boolean;
+  isOnline: boolean;
   addGoal: (goal: Omit<Goal, "id" | "createdAt" | "achieved" | "achievedAt">) => Promise<void>;
   deleteGoal: (id: string) => Promise<void>;
   updateGoal: (goal: Goal) => Promise<void>;
@@ -32,15 +41,34 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const isOnline = useOnlineStatus();
 
   const invalidateQueries = () => {
-    queryClient.invalidateQueries({ queryKey: ['goals', user?.id] });
+    queryClient.invalidateQueries({ queryKey: ['goals', user?.id, isOnline] });
   };
 
   const addGoalMutation = useMutation({
     mutationFn: async (newGoal: Omit<Goal, "id" | "createdAt" | "achieved" | "achievedAt">) => {
       if (!user) throw new Error("User not authenticated");
 
+      // If offline, add to local storage only
+      if (!isOnline) {
+        const now = new Date().toISOString();
+        const offlineGoal: Goal = {
+          id: `offline-${uuidv4()}`,
+          image: newGoal.image,
+          description: newGoal.description,
+          why: newGoal.why,
+          deadline: newGoal.deadline,
+          createdAt: now,
+          achieved: false,
+        };
+        
+        addGoalToLocalStorage(offlineGoal, user.id);
+        return offlineGoal;
+      }
+
+      // If online, add to Supabase
       const { data, error } = await supabase
         .from("user_goals")
         .insert({
@@ -55,6 +83,20 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         .single();
 
       if (error) throw error;
+      
+      // Also add to local storage for offline access
+      const mappedGoal: Goal = {
+        id: data.id,
+        image: data.image,
+        description: data.description,
+        why: data.why || undefined,
+        deadline: data.deadline,
+        createdAt: data.created_at,
+        achieved: data.achieved,
+        achievedAt: data.achieved_at || undefined,
+      };
+      
+      addGoalToLocalStorage(mappedGoal, user.id);
       return data;
     },
     onSuccess: () => {
@@ -68,7 +110,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
       const dbError = error as PostgrestError;
       toast({
         title: "Error adding goal",
-        description: dbError.message,
+        description: isOnline ? dbError.message : "Failed to add goal while offline",
         variant: "destructive",
       });
     },
@@ -76,12 +118,24 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
 
   const deleteGoalMutation = useMutation({
     mutationFn: async (id: string) => {
+      if (!user) throw new Error("User not authenticated");
+
+      // Always update local storage
+      deleteGoalFromLocalStorage(id, user.id);
+      
+      // If offline, only update local storage
+      if (!isOnline) {
+        return { success: true };
+      }
+
+      // If online, update Supabase
       const { error } = await supabase
         .from("user_goals")
         .delete()
         .eq("id", id);
 
       if (error) throw error;
+      return { success: true };
     },
     onSuccess: () => {
       invalidateQueries();
@@ -94,7 +148,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
       const dbError = error as PostgrestError;
       toast({
         title: "Error removing goal",
-        description: dbError.message,
+        description: isOnline ? dbError.message : "Failed to remove goal while offline",
         variant: "destructive",
       });
     },
@@ -102,6 +156,17 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
 
   const updateGoalMutation = useMutation({
     mutationFn: async (updatedGoal: Goal) => {
+      if (!user) throw new Error("User not authenticated");
+
+      // Always update local storage
+      updateGoalInLocalStorage(updatedGoal, user.id);
+      
+      // If offline, only update local storage
+      if (!isOnline) {
+        return { success: true };
+      }
+
+      // If online, update Supabase
       const { error } = await supabase
         .from("user_goals")
         .update({
@@ -113,6 +178,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
         .eq("id", updatedGoal.id);
 
       if (error) throw error;
+      return { success: true };
     },
     onSuccess: () => {
       invalidateQueries();
@@ -125,7 +191,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
       const dbError = error as PostgrestError;
       toast({
         title: "Error updating goal",
-        description: dbError.message,
+        description: isOnline ? dbError.message : "Failed to update goal while offline",
         variant: "destructive",
       });
     },
@@ -133,7 +199,16 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
 
   const markAsAchievedMutation = useMutation({
     mutationFn: async (id: string) => {
+      if (!user) throw new Error("User not authenticated");
       const now = new Date().toISOString();
+      
+      // Always update local storage
+      markGoalAsAchievedInLocalStorage(id, user.id);
+      
+      // If offline, only update local storage
+      if (!isOnline) {
+        return { success: true };
+      }
       
       // Get the goal details before marking as achieved
       const { data: goalData } = await supabase
@@ -168,11 +243,15 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
             opt_in_sharing: false,
           });
       }
+      
+      return { success: true };
     },
     onSuccess: () => {
       invalidateQueries();
-      queryClient.invalidateQueries({ queryKey: ['user-achievements', user?.id] });
-      queryClient.invalidateQueries({ queryKey: ['featured-achievements'] });
+      if (isOnline) {
+        queryClient.invalidateQueries({ queryKey: ['user-achievements', user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['featured-achievements'] });
+      }
       toast({
         title: "Congratulations! 🎉",
         description: "You've achieved your goal! 🎊",
@@ -182,7 +261,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
       const dbError = error as PostgrestError;
       toast({
         title: "Error updating goal",
-        description: dbError.message,
+        description: isOnline ? dbError.message : "Failed to mark goal as achieved while offline",
         variant: "destructive",
       });
     },
@@ -195,6 +274,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
   const value = {
     goals,
     isLoading,
+    isOnline,
     addGoal: async (goal: Omit<Goal, "id" | "createdAt" | "achieved" | "achievedAt">) => {
       await addGoalMutation.mutateAsync(goal);
     },

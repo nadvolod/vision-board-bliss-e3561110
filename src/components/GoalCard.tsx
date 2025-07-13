@@ -1,10 +1,10 @@
 
-import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { format, parseISO, isValid } from 'date-fns';
-import { Goal } from '../types';
-import { Calendar, CheckCircle2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { format, isValid, parseISO } from 'date-fns';
+import { Calendar, CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Goal } from '../types';
 
 interface GoalCardProps {
   goal: Goal;
@@ -53,6 +53,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onClick }) => {
     <Card
       className="vision-card cursor-pointer overflow-hidden h-full flex flex-col hover:shadow-md transition-all"
       onClick={onClick}
+      data-testid={`goal-card-${goal.id}`}
     >
       <div className="relative h-40 sm:h-48 overflow-hidden bg-gray-100">
         {imageLoading && (
