@@ -16,7 +16,7 @@ interface ViewGoalProps {
 }
 
 const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }) => {
-  const { deleteGoal, markAsAchieved } = useOptimizedGoalContext();
+  const { deleteGoal, markAsAchieved, markAsNotCompleted } = useOptimizedGoalContext();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAchieveConfirm, setShowAchieveConfirm] = useState(false);
@@ -32,6 +32,10 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
   const handleAchieved = () => {
     markAsAchieved(goal.id);
     setShowAchieveConfirm(false);
+  };
+
+  const handleNotCompleted = () => {
+    markAsNotCompleted(goal.id);
   };
 
   const handleEditClick = () => {
@@ -72,6 +76,7 @@ const ViewGoal: React.FC<ViewGoalProps> = ({ goal, onClose, onNext, onPrevious }
             <GoalDetails
               goal={goal}
               onMarkAsAchieved={() => setShowAchieveConfirm(true)}
+              onMarkAsNotCompleted={handleNotCompleted}
             />
           </div>
         </DialogContent>
