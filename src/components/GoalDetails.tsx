@@ -51,12 +51,21 @@ const GoalDetails: React.FC<GoalDetailsProps> = ({ goal, onMarkAsAchieved, onMar
           </Button>
         </div>
       ) : (
-        <Button 
-          onClick={onMarkAsAchieved}
-          className="w-full mt-3 bg-green-600 hover:bg-green-700 text-white"
-        >
-          <Check className="mr-2 h-4 w-4" /> Mark as Achieved
-        </Button>
+        <div className="space-y-2">
+          <Button 
+            onClick={onMarkAsAchieved}
+            className="w-full bg-green-600 hover:bg-green-700 text-white"
+          >
+            <Check className="mr-2 h-4 w-4" /> Mark as Achieved
+          </Button>
+          <Button 
+            onClick={onMarkAsNotCompleted}
+            variant="outline"
+            className="w-full"
+          >
+            Mark as Not Achieved
+          </Button>
+        </div>
       )}
     </div>
   );
