@@ -23,9 +23,6 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   
-  // Debug log to ensure we're using the clean version
-  console.log('OptimizedGoalCard rendered - no markAsNotCompleted');
-  
   const formatDate = useCallback((dateStr: string) => {
     try {
       const date = parseISO(dateStr);
