@@ -15,7 +15,13 @@ export const useAchievements = () => {
         .from('user_achievements')
         .insert({
           user_id: user.id,
-          ...achievement,
+          achievement_type: achievement.achievement_type,
+          goal_id: achievement.goal_id || null,
+          achievement_data: achievement.achievement_data as any,
+          impact_metrics: achievement.impact_metrics as any,
+          is_featured: achievement.is_featured,
+          opt_in_sharing: achievement.opt_in_sharing,
+          testimonial: achievement.testimonial || null,
         })
         .select()
         .single();
@@ -33,7 +39,11 @@ export const useAchievements = () => {
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<UserAchievement> }) => {
       const { data, error } = await supabase
         .from('user_achievements')
-        .update(updates)
+        .update({
+          ...updates,
+          achievement_data: updates.achievement_data as any,
+          impact_metrics: updates.impact_metrics as any,
+        } as any)
         .eq('id', id)
         .select()
         .single();
