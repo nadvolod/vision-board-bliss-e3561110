@@ -1,6 +1,8 @@
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useOptimizedGoalContext } from '@/context/OptimizedGoalContext';
 import { format, isValid, parseISO } from 'date-fns';
-import { Calendar, CheckCircle2 } from 'lucide-react';
+import { Calendar, CheckCircle2, X } from 'lucide-react';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Goal } from '../types';
 
@@ -20,6 +22,7 @@ const DEFAULT_IMAGES = [
 ];
 
 const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }) => {
+  const { markAsNotCompleted } = useOptimizedGoalContext();
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   
@@ -45,6 +48,11 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
   const handleImageLoad = useCallback(() => {
     setImageLoaded(true);
   }, []);
+
+  const handleMarkAsNotCompleted = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent opening the modal
+    markAsNotCompleted(goal.id);
+  }, [markAsNotCompleted, goal.id]);
 
   const memoizedDate = useMemo(() => formatDate(goal.deadline), [formatDate, goal.deadline]);
   const memoizedImage = useMemo(() => {
@@ -82,8 +90,19 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
           fetchPriority={index < 4 ? "high" : "low"}
         />
         {goal.achieved && (
-          <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
-            <CheckCircle2 className="h-4 w-4" />
+          <div className="absolute top-2 right-2 flex gap-1">
+            <div className="bg-green-500 text-white rounded-full p-1">
+              <CheckCircle2 className="h-4 w-4" />
+            </div>
+            <Button
+              size="sm"
+              variant="destructive"
+              className="h-6 w-6 p-0 rounded-full"
+              onClick={handleMarkAsNotCompleted}
+              title="Mark as not completed"
+            >
+              <X className="h-3 w-3" />
+            </Button>
           </div>
         )}
       </div>
