@@ -188,13 +188,6 @@ Vision Board Bliss is a web-based application that allows users to create, manag
 }
 ```
 
-## Security Requirements
-- **Row Level Security**: All database tables protected with RLS policies
-- **User Isolation**: Users can only access their own data
-- **Secure Authentication**: Supabase Auth with secure session management
-- **Input Validation**: Zod schema validation for all forms
-- **HTTPS**: Secure communication in production
-
 ## Performance Requirements
 - **Load Time**: Initial page load under 3 seconds
 - **Responsive**: Smooth interaction on mobile and desktop
@@ -206,13 +199,6 @@ Vision Board Bliss is a web-based application that allows users to create, manag
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Mobile browsers (iOS Safari, Chrome Mobile)
 - Progressive Web App capabilities
-
-## Deployment & Hosting
-- **Frontend**: Deployable to Vercel, Netlify, or similar platforms
-- **Backend**: Hosted on Supabase infrastructure
-- **CDN**: Static assets served via CDN
-- **Domain**: Custom domain support available
-- **SSL**: HTTPS encryption for all connections
 
 ## Monitoring & Analytics
 - **Error Tracking**: Runtime error monitoring
