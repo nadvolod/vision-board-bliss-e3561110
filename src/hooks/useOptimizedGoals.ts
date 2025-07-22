@@ -10,7 +10,7 @@ export const useOptimizedGoals = () => {
   const isOnline = useOnlineStatus();
 
   return useQuery({
-    queryKey: ['goals', user?.id, isOnline],
+    queryKey: ['goals', user?.id], // Remove isOnline from key to prevent cache invalidation on network changes
     queryFn: async (): Promise<Goal[]> => {
       if (!user) {
         return [];
@@ -70,15 +70,7 @@ export const useOptimizedGoals = () => {
     },
     // Enable query immediately when user is available
     enabled: !!user,
-    // Ultra-aggressive caching for instant loads and offline support
-    staleTime: 5 * 60 * 1000, // 5 minutes stale time to keep data fresh
-    gcTime: 60 * 60 * 1000, // 1 hour cache retention
-    refetchOnWindowFocus: false,
-    refetchOnMount: true, // Allow refetch on mount to ensure data loads
-    refetchOnReconnect: true, // Refetch when reconnecting to sync data
-    retry: 1, // Allow one retry for better offline resilience
-    retryDelay: 1000,
-    // Critical: Enable offline support
-    networkMode: 'always',
+    // Use default settings from QueryClient for consistent behavior
+    // This ensures cached data is used immediately for faster loads
   });
 };
