@@ -16,12 +16,12 @@ export const useAchievements = () => {
         .insert({
           user_id: user.id,
           ...achievement,
-        })
+        } as never)
         .select()
         .single();
 
       if (error) throw error;
-      return data;
+      return data as UserAchievement;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-achievements', user?.id] });
@@ -33,13 +33,13 @@ export const useAchievements = () => {
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<UserAchievement> }) => {
       const { data, error } = await supabase
         .from('user_achievements')
-        .update(updates)
+        .update(updates as never)
         .eq('id', id)
         .select()
         .single();
 
       if (error) throw error;
-      return data;
+      return data as UserAchievement;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-achievements', user?.id] });
