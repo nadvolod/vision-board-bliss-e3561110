@@ -40,7 +40,11 @@ test.describe('Authenticated Performance Tests', () => {
       port: 9222
     });
 
-    await chrome.kill();
+    try {
+      await chrome.kill();
+    } catch (error) {
+      console.error('Failed to kill Chrome instance:', error);
+    }
   });
   
 });
