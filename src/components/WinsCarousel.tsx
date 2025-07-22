@@ -35,7 +35,7 @@ const WinsCarousel = memo(() => {
 
                   {achievement.achievement_data?.goal_description && (
                     <h3 className="font-semibold mb-3 line-clamp-2">
-                      {achievement.achievement_data.goal_description}
+                      {String(achievement.achievement_data.goal_description)}
                     </h3>
                   )}
 

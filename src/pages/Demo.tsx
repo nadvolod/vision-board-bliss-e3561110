@@ -347,7 +347,7 @@ const Demo = () => {
                         )}
                       </div>
                       <p className="text-sm font-medium">
-                        {achievement.achievement_data?.goal_description || 'No description'}
+                        {String(achievement.achievement_data?.goal_description || 'No description')}
                       </p>
                       {achievement.testimonial && (
                         <p className="text-xs text-muted-foreground italic mt-1">

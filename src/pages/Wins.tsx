@@ -65,7 +65,7 @@ const Wins = () => {
                 
                 {achievement.achievement_data?.goal_description && (
                   <CardTitle className="text-lg line-clamp-2">
-                    {achievement.achievement_data.goal_description}
+                    {String(achievement.achievement_data.goal_description)}
                   </CardTitle>
                 )}
               </CardHeader>

@@ -121,6 +121,33 @@ export const markGoalAsAchievedInLocalStorage = (
 };
 
 /**
+ * Mark a goal as not completed in local storage
+ */
+export const markGoalAsNotCompletedInLocalStorage = (
+  goalId: string, 
+  userId: string
+): void => {
+  try {
+    const existingGoals = getGoalsFromLocalStorage(userId);
+    
+    const updatedGoals = existingGoals.map(goal => {
+      if (goal.id === goalId) {
+        return {
+          ...goal,
+          achieved: false,
+          achievedAt: undefined
+        };
+      }
+      return goal;
+    });
+    
+    saveGoalsToLocalStorage(updatedGoals, userId);
+  } catch (error) {
+    console.error('Error marking goal as not completed in local storage:', error);
+  }
+};
+
+/**
  * Check if the device is online
  */
 export const isOnline = (): boolean => {

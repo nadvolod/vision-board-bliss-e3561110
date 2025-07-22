@@ -46,6 +46,7 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
     setImageLoaded(true);
   }, []);
 
+
   const memoizedDate = useMemo(() => formatDate(goal.deadline), [formatDate, goal.deadline]);
   const memoizedImage = useMemo(() => {
     const baseUrl = imageError ? getDefaultImage() : goal.image;

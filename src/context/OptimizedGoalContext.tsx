@@ -11,6 +11,7 @@ import {
   addGoalToLocalStorage, 
   deleteGoalFromLocalStorage, 
   markGoalAsAchievedInLocalStorage, 
+  markGoalAsNotCompletedInLocalStorage,
   updateGoalInLocalStorage 
 } from "@/lib/offlineStorage";
 import { v4 as uuidv4 } from 'uuid';
@@ -23,6 +24,7 @@ interface OptimizedGoalContextType {
   deleteGoal: (id: string) => Promise<void>;
   updateGoal: (goal: Goal) => Promise<void>;
   markAsAchieved: (id: string) => Promise<void>;
+  markAsNotCompleted: (id: string) => Promise<void>;
   getAchievedGoals: () => Goal[];
 }
 
@@ -267,6 +269,51 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
     },
   });
 
+  const markAsNotCompletedMutation = useMutation({
+    mutationFn: async (id: string) => {
+      if (!user) throw new Error("User not authenticated");
+      
+      // Always update local storage
+      markGoalAsNotCompletedInLocalStorage(id, user.id);
+      
+      // If offline, only update local storage
+      if (!isOnline) {
+        return { success: true };
+      }
+
+      // If online, update Supabase
+      const { error } = await supabase
+        .from("user_goals")
+        .update({
+          achieved: false,
+          achieved_at: null
+        })
+        .eq("id", id);
+
+      if (error) throw error;
+      return { success: true };
+    },
+    onSuccess: () => {
+      invalidateQueries();
+      if (isOnline) {
+        queryClient.invalidateQueries({ queryKey: ['user-achievements', user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['featured-achievements'] });
+      }
+      toast({
+        title: "Goal status updated",
+        description: "Goal marked as not completed",
+      });
+    },
+    onError: (error) => {
+      const dbError = error as PostgrestError;
+      toast({
+        title: "Error updating goal",
+        description: isOnline ? dbError.message : "Failed to mark goal as not completed while offline",
+        variant: "destructive",
+      });
+    },
+  });
+
   const getAchievedGoals = () => {
     return goals.filter(goal => goal.achieved);
   };
@@ -286,6 +333,9 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
     },
     markAsAchieved: async (id: string) => {
       await markAsAchievedMutation.mutateAsync(id);
+    },
+    markAsNotCompleted: async (id: string) => {
+      await markAsNotCompletedMutation.mutateAsync(id);
     },
     getAchievedGoals,
   };

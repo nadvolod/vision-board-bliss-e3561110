@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useGoals } from '../context/GoalContext';
+import { useOptimizedGoalContext } from '../context/OptimizedGoalContext';
 import { format, parseISO, isValid } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, ArrowLeft } from 'lucide-react';
@@ -8,8 +8,8 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 const Achievements: React.FC = () => {
-  const { getAchievedGoals } = useGoals();
-  const achievedGoals = getAchievedGoals();
+  const { goals } = useOptimizedGoalContext();
+  const achievedGoals = goals.filter(goal => goal.achieved);
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return 'Unknown date';
