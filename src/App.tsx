@@ -19,11 +19,11 @@ import Wins from "./pages/Wins";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 0, // Always use cache immediately
+      staleTime: 5 * 60 * 1000, // 5 minutes - use cache immediately for faster loads
       gcTime: 60 * 60 * 1000, // 1 hour cache retention
       refetchOnWindowFocus: false,
-      refetchOnMount: true, // Allow refetch on mount to ensure data loads
-      refetchOnReconnect: false, 
+      refetchOnMount: false, // Don't refetch on mount to use cached data immediately
+      refetchOnReconnect: true, // Only refetch when reconnecting
       retry: 0, // No retries for absolute maximum speed
       retryDelay: 0,
       // Enable offline support - queries will work even when offline

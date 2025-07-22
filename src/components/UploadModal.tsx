@@ -1,13 +1,13 @@
 
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { DatePicker } from '@/components/ui/date-picker';
 import { useOptimizedGoalContext } from '@/context/OptimizedGoalContext';
 import { Image } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface UploadModalProps {
   isOpen: boolean;
@@ -75,8 +75,8 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
       setImageFile(null);
       setIsUploading(false);
       onClose();
-    } catch (error) {
-      console.error('Error creating goal:', error);
+    } catch (error: unknown) {
+      console.error('Error uploading file:', error);
       setIsUploading(false);
     }
   };

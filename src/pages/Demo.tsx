@@ -1,15 +1,15 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { NPSScore, UserAchievement } from '@/types/feedback';
-import { TestTube, Trophy, Users, MessageSquare, Star, Target } from 'lucide-react';
+import { MessageSquare, Star, Target, TestTube, Trophy, Users } from 'lucide-react';
 import { useState } from 'react';
 import AchievementModal from '../components/AchievementModal';
 import NPSModal from '../components/NPSModal';
@@ -74,7 +74,7 @@ const Demo = () => {
         title: "Achievement Created!",
         description: "Test achievement has been added to the database.",
       });
-    } catch (error) {
+    } catch (error: unknown) {
       toast({
         title: "Error",
         description: "Failed to create achievement. Check console for details.",
@@ -95,7 +95,7 @@ const Demo = () => {
         title: "NPS Feedback Submitted!",
         description: `Score: ${score}/10 with demo feedback`,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       toast({
         title: "Error",
         description: "Failed to submit NPS feedback. Check console for details.",

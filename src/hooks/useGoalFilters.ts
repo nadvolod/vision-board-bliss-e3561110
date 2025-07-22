@@ -35,8 +35,8 @@ export const useGoalFilters = (goals: Goal[], selectedPeriod: FilterPeriod) => {
         }
         
         return goalDeadline >= now && goalDeadline <= cutoffDate;
-      } catch (error) {
-        console.error(`Error processing goal ${goal.id}:`, error);
+      } catch (error: unknown) {
+        console.error('Error fetching goals for filtering:', error);
         return false;
       }
     });

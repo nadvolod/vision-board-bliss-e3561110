@@ -86,7 +86,7 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, goal }) 
       });
       
       onClose();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error updating goal:', error);
     } finally {
       setIsUpdating(false);

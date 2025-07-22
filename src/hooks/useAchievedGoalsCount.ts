@@ -1,6 +1,6 @@
 
-import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useState } from 'react';
 
 export const useAchievedGoalsCount = () => {
   const [count, setCount] = useState<number | null>(null);
@@ -17,8 +17,8 @@ export const useAchievedGoalsCount = () => {
         }
 
         setCount(data || 0);
-      } catch (error) {
-        console.error('Error calling get_total_achieved_goals:', error);
+      } catch (error: unknown) {
+        console.error('Error fetching achieved goals count:', error);
       } finally {
         setIsLoading(false);
       }

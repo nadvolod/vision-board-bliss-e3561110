@@ -34,7 +34,7 @@ const NPSModal = ({ isOpen, onClose }: NPSModalProps) => {
       setSelectedScore(null);
       setFeedbackText('');
       setShowTextarea(false);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error submitting NPS feedback:', error);
     }
   };

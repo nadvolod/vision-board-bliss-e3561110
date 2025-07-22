@@ -61,8 +61,8 @@ const Auth = () => {
         await signUp(data.email, data.password);
         // Don't redirect after signup as they need to verify email
       }
-    } catch (error) {
-      console.error("Authentication error:", error);
+    } catch (error: unknown) {
+      console.error('Auth error:', error);
     } finally {
       setIsLoading(false);
     }

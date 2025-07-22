@@ -41,7 +41,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } else {
           setUser(session?.user ?? null);
         }
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Session error:', error);
       } finally {
         // Set loading to false faster
@@ -78,7 +78,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         title: "Success!",
         description: "Please check your email to confirm your account.",
       });
-    } catch (error) {
+    } catch (error: unknown) {
       const authError = error as AuthError;
       toast({
         title: "Error",
@@ -101,7 +101,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (error) {
         throw error;
       }
-    } catch (error) {
+    } catch (error: unknown) {
       const authError = error as AuthError;
       toast({
         title: "Error",
@@ -120,7 +120,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (error) {
         throw error;
       }
-    } catch (error) {
+    } catch (error: unknown) {
       const authError = error as AuthError;
       toast({
         title: "Error",

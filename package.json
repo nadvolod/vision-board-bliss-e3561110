@@ -11,7 +11,10 @@
     "preview": "vite preview",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "test:headed": "playwright test --headed"
+    "test:headed": "playwright test --headed",
+    "test:lighthouse:prod:headed": "BASE_URL=https://vision-board-bliss.lovable.app npx playwright test tests/lighthouse-dashboard.spec.ts --headed",
+    "test:lighthouse:local:headed": "npx playwright test tests/lighthouse-dashboard.spec.ts --headed"
+
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -77,12 +80,15 @@
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.20",
+    "chrome-launcher": "^1.2.0",
     "eslint": "^9.9.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
+    "lighthouse": "^12.8.0",
     "lovable-tagger": "^1.1.7",
-    "playwright": "^1.49.1",
+    "playwright": "^1.54.1",
+    "playwright-lighthouse": "^4.0.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.11",
     "terser": "^5.43.1",
