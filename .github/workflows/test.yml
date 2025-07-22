@@ -152,9 +152,9 @@ jobs:
 
       - name: Run Playwright Lighthouse Performance Test (Production)
         env:
-          TEST_EMAIL: ${{ secrets.PROD_TEST_EMAIL }}
-          TEST_PASSWORD: ${{ secrets.PROD_TEST_PASSWORD }}
-          BASE_URL: https://vision-board-bliss.lovable.app
+            TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+            TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+            BASE_URL: https://vision-board-bliss.lovable.app
         run: npx playwright test tests/lighthouse-dashboard.spec.ts
 
   deployment-readiness:
