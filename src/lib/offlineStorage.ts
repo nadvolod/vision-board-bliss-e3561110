@@ -15,7 +15,7 @@ export const saveGoalsToLocalStorage = (goals: Goal[], userId: string): void => 
     };
     localStorage.setItem(GOALS_STORAGE_KEY, JSON.stringify(storageData));
     localStorage.setItem(LAST_SYNC_KEY, new Date().toISOString());
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error saving goals to local storage:', error);
   }
 };
@@ -36,7 +36,7 @@ export const getGoalsFromLocalStorage = (userId: string): Goal[] => {
     }
     
     return [];
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error retrieving goals from local storage:', error);
     return [];
   }
@@ -53,7 +53,7 @@ export const addGoalToLocalStorage = (
     const existingGoals = getGoalsFromLocalStorage(userId);
     const updatedGoals = [goal, ...existingGoals];
     saveGoalsToLocalStorage(updatedGoals, userId);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error adding goal to local storage:', error);
   }
 };
@@ -71,7 +71,7 @@ export const updateGoalInLocalStorage = (
       goal.id === updatedGoal.id ? updatedGoal : goal
     );
     saveGoalsToLocalStorage(updatedGoals, userId);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error updating goal in local storage:', error);
   }
 };
@@ -87,7 +87,7 @@ export const deleteGoalFromLocalStorage = (
     const existingGoals = getGoalsFromLocalStorage(userId);
     const updatedGoals = existingGoals.filter(goal => goal.id !== goalId);
     saveGoalsToLocalStorage(updatedGoals, userId);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error deleting goal from local storage:', error);
   }
 };
@@ -115,7 +115,7 @@ export const markGoalAsAchievedInLocalStorage = (
     });
     
     saveGoalsToLocalStorage(updatedGoals, userId);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error marking goal as achieved in local storage:', error);
   }
 };

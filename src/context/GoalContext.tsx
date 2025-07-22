@@ -67,7 +67,7 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           }));
           setGoals(formattedGoals);
         }
-      } catch (error) {
+      } catch (error: unknown) {
         const dbError = error as PostgrestError;
         console.error("Error fetching goals:", dbError.message);
         toast({
@@ -129,9 +129,9 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           description: "Your vision has been added to your board",
         });
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('Error creating goal:', error);
       const dbError = error as PostgrestError;
-      console.error("Error adding goal:", dbError.message);
       toast({
         title: "Error adding goal",
         description: dbError.message,
@@ -158,9 +158,9 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         title: "Goal removed",
         description: "Your vision has been removed from your board",
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('Error deleting goal:', error);
       const dbError = error as PostgrestError;
-      console.error("Error deleting goal:", dbError.message);
       toast({
         title: "Error removing goal",
         description: dbError.message,
@@ -192,9 +192,9 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         title: "Goal updated",
         description: "Your vision has been updated",
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('Error updating goal:', error);
       const dbError = error as PostgrestError;
-      console.error("Error updating goal:", dbError.message);
       toast({
         title: "Error updating goal",
         description: dbError.message,
@@ -232,9 +232,9 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         title: "Congratulations! 🎉",
         description: "You've achieved your goal!",
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('Error marking goal as achieved:', error);
       const dbError = error as PostgrestError;
-      console.error("Error marking goal as achieved:", dbError.message);
       toast({
         title: "Error updating goal",
         description: dbError.message,

@@ -36,8 +36,8 @@ const AchievementModal = ({ isOpen, onClose, achievement }: AchievementModalProp
         },
       });
       onClose();
-    } catch (error) {
-      console.error('Error updating achievement:', error);
+    } catch (error: unknown) {
+      console.error('Error saving achievement:', error);
     }
   };
 

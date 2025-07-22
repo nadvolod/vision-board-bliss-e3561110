@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         } else {
           setUser(session?.user ?? null);
         }
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Session error:', error);
       } finally {
         // Set loading to false faster
@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         title: "Success!",
         description: "Please check your email to confirm your account.",
       });
-    } catch (error) {
+    } catch (error: unknown) {
       const authError = error as AuthError;
       toast({
         title: "Error",
@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (error) {
         throw error;
       }
-    } catch (error) {
+    } catch (error: unknown) {
       const authError = error as AuthError;
       toast({
         title: "Error",
@@ -119,7 +119,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (error) {
         throw error;
       }
-    } catch (error) {
+    } catch (error: unknown) {
       const authError = error as AuthError;
       toast({
         title: "Error",

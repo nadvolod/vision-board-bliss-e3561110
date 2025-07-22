@@ -54,7 +54,7 @@ export const useOptimizedGoals = () => {
         }
 
         return mappedGoals;
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Error fetching goals from Supabase:', error);
         
         // Fallback to local storage if online fetch fails
