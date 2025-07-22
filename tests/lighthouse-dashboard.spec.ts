@@ -26,8 +26,11 @@ test.describe('Authenticated Performance Tests', () => {
   
   test('Login and test dashboard performance', async ({ page }) => {
     // Launch Chrome with remote debugging
-    // const chrome = await launch({ port: 9222, chromeFlags: ['--headless'] });
-    const chrome = await launch({ port: 9222 });
+    // Launch Chrome, using headless mode when running in CI
+    const chrome = await launch({
+      port: 9222,
+      chromeFlags: process.env.CI ? ['--headless'] : []
+    });
 
     await page.goto(TEST_CONFIG.loginUrl);
     await page.locator('input[name="email"]').fill(TEST_CONFIG.credentials.email);
