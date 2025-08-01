@@ -3,6 +3,7 @@ import { LogOut, Trophy, Users, TestTube, BarChart3 } from 'lucide-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import ExportGoalsButton from './ExportGoalsButton';
 
 const Header: React.FC = () => {
   const { user, signOut } = useAuth();
@@ -46,10 +47,12 @@ const Header: React.FC = () => {
                     <TestTube className="h-4 w-4" />
                     <span className="hidden sm:inline">Demo</span>
                   </Button>
-                </Link>
-              </nav>
-              
-              <span className="text-sm text-muted-foreground mr-2 hidden sm:inline-block" data-testid="user-email">
+                 </Link>
+               </nav>
+               
+               <ExportGoalsButton />
+               
+               <span className="text-sm text-muted-foreground mr-2 hidden sm:inline-block" data-testid="user-email">
                 {user.email}
               </span>
               <Button
