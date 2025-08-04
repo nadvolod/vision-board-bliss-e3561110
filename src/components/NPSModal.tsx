@@ -39,6 +39,23 @@ const NPSModal = ({ isOpen, onClose }: NPSModalProps) => {
     }
   };
 
+  const handleSkip = async () => {
+    try {
+      // Update last_nps_shown timestamp when skipping
+      await submitNPSFeedback.mutateAsync({
+        score: '0', // Use 0 as a skip indicator
+        feedback_text: null,
+      });
+      onClose();
+      // Reset form
+      setSelectedScore(null);
+      setFeedbackText('');
+      setShowTextarea(false);
+    } catch (error: unknown) {
+      console.error('Error skipping NPS feedback:', error);
+    }
+  };
+
   const getScoreLabel = (score: number) => {
     if (score <= 6) return 'Not likely';
     if (score <= 8) return 'Neutral';
@@ -113,8 +130,8 @@ const NPSModal = ({ isOpen, onClose }: NPSModalProps) => {
           {/* Action Buttons */}
           {showTextarea && (
             <div className="flex gap-3 justify-end">
-              <Button variant="outline" onClick={onClose}>
-                Skip
+              <Button variant="outline" onClick={handleSkip} disabled={isSubmittingNPS}>
+                {isSubmittingNPS ? 'Skipping...' : 'Skip'}
               </Button>
               <Button 
                 onClick={handleSubmit}
