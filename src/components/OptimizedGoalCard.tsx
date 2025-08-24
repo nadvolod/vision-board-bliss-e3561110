@@ -50,19 +50,22 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
 
   const memoizedDate = useMemo(() => formatDate(goal.deadline), [formatDate, goal.deadline]);
   const memoizedImage = useMemo(() => {
-    // Handle base64 images that might be corrupted or too large
-    const baseUrl = imageError ? getDefaultImage() : goal.image;
+    // Handle error cases with fallback
+    if (imageError || !goal.image) {
+      return getDefaultImage();
+    }
     
-    // Skip optimization for data URIs to prevent corruption
-    if (baseUrl.startsWith('data:')) {
-      return getDefaultImage(); // Use fallback for large base64 images
+    // Keep base64 images as-is (user uploads)
+    if (goal.image.startsWith('data:')) {
+      return goal.image;
     }
     
     // Optimize external image URLs
-    if (baseUrl.includes('unsplash.com')) {
-      return baseUrl.includes('?') ? `${baseUrl}&w=400&q=60` : `${baseUrl}?w=400&q=60`;
+    if (goal.image.includes('unsplash.com')) {
+      return goal.image.includes('?') ? `${goal.image}&w=400&q=60` : `${goal.image}?w=400&q=60`;
     }
-    return baseUrl;
+    
+    return goal.image;
   }, [imageError, getDefaultImage, goal.image]);
 
   return (

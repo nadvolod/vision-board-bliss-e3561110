@@ -8,16 +8,10 @@ const LAST_SYNC_KEY = 'vision-board-last-sync';
  */
 export const saveGoalsToLocalStorage = (goals: Goal[], userId: string): void => {
   try {
-    // Filter out goals with large images to prevent quota exceeded errors
-    const filteredGoals = goals.map(goal => ({
-      ...goal,
-      // Only keep small images or convert large ones to placeholder
-      image: goal.image && goal.image.length > 50000 ? '' : goal.image
-    }));
-    
+    // Try to save all goals first
     const storageData = {
       userId,
-      goals: filteredGoals,
+      goals,
       timestamp: new Date().toISOString()
     };
     
@@ -25,17 +19,20 @@ export const saveGoalsToLocalStorage = (goals: Goal[], userId: string): void => 
     
     // Check if the data is too large (5MB limit for localStorage)
     if (dataString.length > 5 * 1024 * 1024) {
-      console.warn('Data too large for localStorage, keeping only essential data');
-      // Keep only essential data without images
-      const essentialData = {
+      console.warn('Data too large for localStorage, optimizing images...');
+      // Only filter images if we exceed storage limits
+      const optimizedGoals = goals.map(goal => ({
+        ...goal,
+        // Keep smaller images, remove very large ones (>100KB)
+        image: goal.image && goal.image.length > 100000 ? '' : goal.image
+      }));
+      
+      const optimizedData = {
         userId,
-        goals: filteredGoals.map(goal => ({
-          ...goal,
-          image: '' // Remove all images if still too large
-        })),
+        goals: optimizedGoals,
         timestamp: new Date().toISOString()
       };
-      localStorage.setItem(GOALS_STORAGE_KEY, JSON.stringify(essentialData));
+      localStorage.setItem(GOALS_STORAGE_KEY, JSON.stringify(optimizedData));
     } else {
       localStorage.setItem(GOALS_STORAGE_KEY, dataString);
     }
@@ -43,16 +40,20 @@ export const saveGoalsToLocalStorage = (goals: Goal[], userId: string): void => 
     localStorage.setItem(LAST_SYNC_KEY, new Date().toISOString());
   } catch (error: unknown) {
     console.error('Error saving goals to local storage:', error);
-    // Try to save without images as fallback
+    // Try to save without large images as fallback
     try {
+      const fallbackGoals = goals.map(goal => ({ 
+        ...goal, 
+        image: goal.image && goal.image.length > 50000 ? '' : goal.image 
+      }));
       const fallbackData = {
         userId,
-        goals: goals.map(goal => ({ ...goal, image: '' })),
+        goals: fallbackGoals,
         timestamp: new Date().toISOString()
       };
       localStorage.setItem(GOALS_STORAGE_KEY, JSON.stringify(fallbackData));
     } catch (fallbackError) {
-      console.error('Failed to save even without images:', fallbackError);
+      console.error('Failed to save even with image optimization:', fallbackError);
     }
   }
 };

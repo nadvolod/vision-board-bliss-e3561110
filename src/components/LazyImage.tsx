@@ -27,7 +27,11 @@ export const LazyImage: React.FC<LazyImageProps> = ({
   const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    if (priority) return;
+    // Always load base64 images immediately (user uploads)
+    if (priority || src.startsWith('data:')) {
+      setIsInView(true);
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -48,7 +52,7 @@ export const LazyImage: React.FC<LazyImageProps> = ({
     }
 
     return () => observer.disconnect();
-  }, [priority]);
+  }, [priority, src]);
 
   const handleLoad = () => {
     setIsLoaded(true);
