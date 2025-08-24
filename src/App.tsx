@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider } from "./context/AuthContext";
 import { OptimizedGoalProvider } from "./context/OptimizedGoalContext";
 import Achievements from "./pages/Achievements";
@@ -38,45 +39,47 @@ const queryClient = new QueryClient({
 });
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <OptimizedGoalProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/app" element={
-                <ProtectedRoute>
-                  <OptimizedIndex />
-                </ProtectedRoute>
-              } />
-              <Route path="/achievements" element={
-                <ProtectedRoute>
-                  <Achievements />
-                </ProtectedRoute>
-              } />
-              <Route path="/wins" element={<Wins />} />
-              <Route path="/nps-analytics" element={
-                <ProtectedRoute>
-                  <NPSAnalytics />
-                </ProtectedRoute>
-              } />
-              <Route path="/demo" element={
-                <ProtectedRoute>
-                  <Demo />
-                </ProtectedRoute>
-              } />
-              <Route path="/index" element={<Navigate to="/app" replace />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </OptimizedGoalProvider>
-    </AuthProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <OptimizedGoalProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+              <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/app" element={
+                  <ProtectedRoute>
+                    <OptimizedIndex />
+                  </ProtectedRoute>
+                } />
+                <Route path="/achievements" element={
+                  <ProtectedRoute>
+                    <Achievements />
+                  </ProtectedRoute>
+                } />
+                <Route path="/wins" element={<Wins />} />
+                <Route path="/nps-analytics" element={
+                  <ProtectedRoute>
+                    <NPSAnalytics />
+                  </ProtectedRoute>
+                } />
+                <Route path="/demo" element={
+                  <ProtectedRoute>
+                    <Demo />
+                  </ProtectedRoute>
+                } />
+                <Route path="/index" element={<Navigate to="/app" replace />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </OptimizedGoalProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
