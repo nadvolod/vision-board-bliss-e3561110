@@ -16,30 +16,38 @@ import NotFound from "./pages/NotFound";
 import NPSAnalytics from "./pages/NPSAnalytics";
 import OptimizedIndex from "./pages/OptimizedIndex";
 import Wins from "./pages/Wins";
+import { usePerformanceMonitor } from "./hooks/usePerformanceMonitor";
 
 // Ultra-fast React Query configuration optimized for mobile performance
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 2 * 60 * 1000, // 2 minutes - prevent unnecessary refetches
-      gcTime: 30 * 60 * 1000, // 30 minutes cache retention for offline
+      staleTime: 5 * 60 * 1000, // Data is fresh for 5 minutes
+      gcTime: 10 * 60 * 1000, // Keep cache for 10 minutes
+      retry: (failureCount, error: any) => {
+        // Don't retry on 4xx errors
+        if (error?.status >= 400 && error?.status < 500) return false;
+        return failureCount < 2;
+      },
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
+      refetchOnMount: false, // Use cache first
+      refetchOnReconnect: 'always',
       refetchOnWindowFocus: false,
-      refetchOnMount: false, // Use cache first for instant loads
-      refetchOnReconnect: true,
-      retry: 1, // Single retry for speed
-      retryDelay: 200, // Fast retry
-      networkMode: 'online',
+      networkMode: 'offlineFirst', // Use cache when offline
     },
     mutations: {
       retry: 1,
-      retryDelay: 200,
-      networkMode: 'online',
+      networkMode: 'offlineFirst',
     },
   },
 });
 
-const App = () => (
-  <ErrorBoundary>
+const App = () => {
+  usePerformanceMonitor();
+
+  return (
+    <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <OptimizedGoalProvider>
@@ -79,7 +87,8 @@ const App = () => (
         </OptimizedGoalProvider>
       </AuthProvider>
     </QueryClientProvider>
-  </ErrorBoundary>
-);
+    </ErrorBoundary>
+  );
+};
 
 export default App;

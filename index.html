@@ -4,24 +4,49 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vision Board</title>
-    <meta name="description" content="Visualize and track your goals" />
-    <meta name="author" content="Lovable" />
+    <title>Vision Board | Transform Dreams into Achievable Goals</title>
+    
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.gpteng.co;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: https: blob:;
+      connect-src 'self' https://*.supabase.co wss://*.supabase.co;
+      media-src 'self' data: blob:;
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      frame-ancestors 'none'
+    ">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Create and track your vision board with powerful goal-setting tools. Turn your dreams into achievable milestones with our intuitive visual planning platform." />
+    <meta name="keywords" content="vision board, goal setting, personal development, dream planning, achievement tracking, visualization, motivation" />
+    <meta name="author" content="Vision Board" />
+    <link rel="canonical" href="https://vision-board.app" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#6366f1" />
 
-    <meta property="og:title" content="Vision Board Bliss" />
-    <meta property="og:description" content="Visualize and track your goals" />
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:url" content="https://vision-board.app" />
+    <meta property="og:title" content="Vision Board | Transform Dreams into Achievable Goals" />
+    <meta property="og:description" content="Create and track your vision board with powerful goal-setting tools. Turn your dreams into achievable milestones." />
+    <meta property="og:image" content="/og-image.jpg" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://vision-board.app" />
+    <meta property="twitter:title" content="Vision Board | Transform Dreams into Achievable Goals" />
+    <meta property="twitter:description" content="Create and track your vision board with powerful goal-setting tools. Turn your dreams into achievable milestones." />
+    <meta property="twitter:image" content="/og-image.jpg" />
 
-    <!-- Preconnect to external domains for faster loading -->
-    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
-    <link rel="dns-prefetch" href="https://images.unsplash.com" />
+    <!-- Performance optimizations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://images.unsplash.com">
     <link rel="preconnect" href="https://ydjpvzcjwxkdwghxywec.supabase.co" crossorigin />
     
     <!-- Critical CSS for faster rendering -->
@@ -29,23 +54,28 @@
       /* Critical CSS for initial loading */
       body {
         margin: 0;
+        padding: 0;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        background-color: hsl(0 0% 98%);
       }
       
       #root {
         min-height: 100vh;
+        contain: layout style paint;
       }
       
       /* Performance optimizations */
-      .animate-pulse {
-        animation: pulse 1.5s ease-in-out infinite;
+      .loading-skeleton {
+        background: linear-gradient(90deg, hsl(210 40% 94%) 25%, hsl(210 40% 90%) 50%, hsl(210 40% 94%) 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
       }
       
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: .5; }
+      @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
       }
       
       .vision-card {
@@ -56,7 +86,7 @@
       /* Prevent layout shift */
       img[loading="lazy"] {
         min-height: 200px;
-        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        background: linear-gradient(135deg, hsl(210 40% 94%), hsl(210 40% 90%));
       }
     </style>
   </head>

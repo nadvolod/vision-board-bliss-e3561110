@@ -3,6 +3,7 @@ import { format, isValid, parseISO } from 'date-fns';
 import { Calendar, CheckCircle2 } from 'lucide-react';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Goal } from '../types';
+import { LazyImage } from './LazyImage';
 
 interface OptimizedGoalCardProps {
   goal: Goal;
@@ -75,18 +76,15 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
         {!imageLoaded && (
           <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
         )}
-        <img
+        <LazyImage
           src={memoizedImage}
           alt={goal.description}
-          className={`w-full h-full object-cover transition-opacity duration-200 ${
-            imageLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-          onError={handleImageError}
+          className="w-full h-full object-cover"
+          width={400}
+          height={300}
+          priority={index < 4}
           onLoad={handleImageLoad}
-          loading={index < 4 ? "eager" : "lazy"}
-          decoding="async"
-          width="400"
-          height="300"
+          onError={handleImageError}
         />
         {goal.achieved && (
           <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
