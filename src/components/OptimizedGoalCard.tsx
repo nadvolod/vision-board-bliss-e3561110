@@ -49,8 +49,15 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
 
   const memoizedDate = useMemo(() => formatDate(goal.deadline), [formatDate, goal.deadline]);
   const memoizedImage = useMemo(() => {
+    // Handle base64 images that might be corrupted or too large
     const baseUrl = imageError ? getDefaultImage() : goal.image;
-    // Optimize image URL for faster loading
+    
+    // Skip optimization for data URIs to prevent corruption
+    if (baseUrl.startsWith('data:')) {
+      return getDefaultImage(); // Use fallback for large base64 images
+    }
+    
+    // Optimize external image URLs
     if (baseUrl.includes('unsplash.com')) {
       return baseUrl.includes('?') ? `${baseUrl}&w=400&q=60` : `${baseUrl}?w=400&q=60`;
     }

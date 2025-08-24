@@ -37,23 +37,25 @@
         min-height: 100vh;
       }
       
-      /* Skeleton loading styles */
+      /* Performance optimizations */
       .animate-pulse {
-        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        animation: pulse 1.5s ease-in-out infinite;
       }
       
       @keyframes pulse {
-        0%, 100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: .5;
-        }
+        0%, 100% { opacity: 1; }
+        50% { opacity: .5; }
       }
       
-      /* Hide elements that cause layout shift */
       .vision-card {
+        contain: layout style paint;
         will-change: transform;
+      }
+      
+      /* Prevent layout shift */
+      img[loading="lazy"] {
+        min-height: 200px;
+        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
       }
     </style>
   </head>

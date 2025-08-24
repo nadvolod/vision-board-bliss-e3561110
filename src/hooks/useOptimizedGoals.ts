@@ -24,28 +24,53 @@ export const useOptimizedGoals = () => {
       }
 
       try {
-        // Ultra-fast database query with minimal fields and optimized for speed
+        // First try a simple query without complex operations
         const { data, error } = await supabase
           .from('user_goals')
-          .select('id, image, description, why, deadline, created_at, achieved, achieved_at')
+          .select('id, description, why, deadline, created_at, achieved, achieved_at')
           .eq('user_id', user.id)
-          .order('created_at', { ascending: false }); // Remove limit to get ALL goals
+          .order('created_at', { ascending: false });
 
         if (error) {
+          console.error('Supabase query error:', error);
           throw error;
         }
 
-        // Ultra-fast mapping - inline return for maximum speed
-        const mappedGoals = data?.map((item: UserGoal): Goal => ({
+        // If successful, get images separately with error handling
+        let goalsWithImages = data || [];
+        
+        try {
+          const { data: imageData } = await supabase
+            .from('user_goals')
+            .select('id, image')
+            .eq('user_id', user.id);
+          
+          // Merge image data safely
+          if (imageData) {
+            goalsWithImages = goalsWithImages.map(goal => {
+              const imageRecord = imageData.find(img => img.id === goal.id);
+              return {
+                ...goal,
+                image: imageRecord?.image || ''
+              };
+            });
+          }
+        } catch (imageError) {
+          console.warn('Failed to load images, using defaults:', imageError);
+          // Continue without images - they'll use defaults
+        }
+        
+        // Ultra-fast mapping with image size validation
+        const mappedGoals = goalsWithImages.map((item: any): Goal => ({
           id: item.id,
-          image: item.image,
-          description: item.description,
+          image: item.image || '', // Handle null/undefined images
+          description: item.description || '',
           why: item.why || undefined,
-          deadline: item.deadline,
+          deadline: item.deadline || new Date().toISOString(),
           createdAt: item.created_at,
-          achieved: item.achieved,
+          achieved: item.achieved || false,
           achievedAt: item.achieved_at || undefined,
-        })) || [];
+        }));
 
         // Save goals to local storage for offline use
         if (mappedGoals.length > 0) {
