@@ -2,6 +2,7 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import './lib/consoleFilter.ts' // Import console filter to reduce spam
 
 // Register service worker for offline capabilities
 if ('serviceWorker' in navigator) {

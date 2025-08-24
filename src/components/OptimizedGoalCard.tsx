@@ -87,7 +87,6 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
           decoding="async"
           width="400"
           height="300"
-          fetchPriority={index < 2 ? "high" : "low"}
         />
         {goal.achieved && (
           <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">

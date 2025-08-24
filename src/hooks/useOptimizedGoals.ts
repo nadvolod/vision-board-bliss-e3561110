@@ -72,9 +72,13 @@ export const useOptimizedGoals = () => {
           achievedAt: item.achieved_at || undefined,
         }));
 
-        // Save goals to local storage for offline use
+        // Save goals to local storage for offline use (only if not too large)
         if (mappedGoals.length > 0) {
-          saveGoalsToLocalStorage(mappedGoals, user.id);
+          try {
+            saveGoalsToLocalStorage(mappedGoals, user.id);
+          } catch (storageError) {
+            console.warn('Failed to save to localStorage, continuing without offline cache:', storageError);
+          }
         }
 
         return mappedGoals;
