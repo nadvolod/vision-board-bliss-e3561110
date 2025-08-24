@@ -138,12 +138,12 @@ const OptimizedVisionBoard: React.FC = () => {
     );
   }
 
-  // Ultra-minimal loading state for instant perceived performance
+  // Simplified loading state with fewer skeleton cards for faster render
   if (isLoading) {
     return (
       <div className="flex flex-col h-full" data-testid="vision-board">
         <div className="flex justify-between items-center px-4 py-3 border-b bg-background sticky top-0 z-10">
-          <h2 className="text-lg font-medium">My Current Goals</h2>
+          <div className="h-6 w-32 bg-gray-200 rounded animate-pulse" />
         </div>
         
         {/* Always render GoalFilters immediately for performance test - even when loading */}
@@ -153,9 +153,10 @@ const OptimizedVisionBoard: React.FC = () => {
           goalCount={0}
         />
         
-        {/* Minimal loading indicator instead of heavy skeletons */}
-        <div className="flex justify-center items-center h-32">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+          {Array.from({ length: 2 }, (_, index) => (
+            <SkeletonCard key={index} />
+          ))}
         </div>
       </div>
     );

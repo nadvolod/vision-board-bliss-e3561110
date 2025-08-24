@@ -3,7 +3,6 @@ import { format, isValid, parseISO } from 'date-fns';
 import { Calendar, CheckCircle2 } from 'lucide-react';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Goal } from '../types';
-import { LazyImage } from './LazyImage';
 
 interface OptimizedGoalCardProps {
   goal: Goal;
@@ -50,22 +49,12 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
 
   const memoizedDate = useMemo(() => formatDate(goal.deadline), [formatDate, goal.deadline]);
   const memoizedImage = useMemo(() => {
-    // Handle error cases with fallback
-    if (imageError || !goal.image) {
-      return getDefaultImage();
+    const baseUrl = imageError ? getDefaultImage() : goal.image;
+    // Optimize image URL for faster loading
+    if (baseUrl.includes('unsplash.com')) {
+      return baseUrl.includes('?') ? `${baseUrl}&w=400&q=60` : `${baseUrl}?w=400&q=60`;
     }
-    
-    // Keep base64 images as-is (user uploads)
-    if (goal.image.startsWith('data:')) {
-      return goal.image;
-    }
-    
-    // Optimize external image URLs
-    if (goal.image.includes('unsplash.com')) {
-      return goal.image.includes('?') ? `${goal.image}&w=400&q=60` : `${goal.image}?w=400&q=60`;
-    }
-    
-    return goal.image;
+    return baseUrl;
   }, [imageError, getDefaultImage, goal.image]);
 
   return (
@@ -79,15 +68,19 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
         {!imageLoaded && (
           <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
         )}
-        <LazyImage
+        <img
           src={memoizedImage}
           alt={goal.description}
-          className="w-full h-full object-cover"
-          width={400}
-          height={300}
-          priority={index < 4}
-          onLoad={handleImageLoad}
+          className={`w-full h-full object-cover transition-opacity duration-200 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
           onError={handleImageError}
+          onLoad={handleImageLoad}
+          loading={index < 8 ? "eager" : "lazy"}
+          decoding="async"
+          width="400"
+          height="300"
+          fetchPriority={index < 4 ? "high" : "low"}
         />
         {goal.achieved && (
           <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">

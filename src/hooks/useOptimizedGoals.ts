@@ -24,61 +24,32 @@ export const useOptimizedGoals = () => {
       }
 
       try {
-        // First try a simple query without complex operations
+        // Ultra-fast database query with minimal fields and optimized for speed
         const { data, error } = await supabase
           .from('user_goals')
-          .select('id, description, why, deadline, created_at, achieved, achieved_at')
+          .select('id, image, description, why, deadline, created_at, achieved, achieved_at')
           .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false }); // Remove limit to get ALL goals
 
         if (error) {
-          console.error('Supabase query error:', error);
           throw error;
         }
 
-        // If successful, get images separately with error handling
-        let goalsWithImages = data || [];
-        
-        try {
-          const { data: imageData } = await supabase
-            .from('user_goals')
-            .select('id, image')
-            .eq('user_id', user.id);
-          
-          // Merge image data safely
-          if (imageData) {
-            goalsWithImages = goalsWithImages.map(goal => {
-              const imageRecord = imageData.find(img => img.id === goal.id);
-              return {
-                ...goal,
-                image: imageRecord?.image || ''
-              };
-            });
-          }
-        } catch (imageError) {
-          console.warn('Failed to load images, using defaults:', imageError);
-          // Continue without images - they'll use defaults
-        }
-        
-        // Ultra-fast mapping with image size validation
-        const mappedGoals = goalsWithImages.map((item: any): Goal => ({
+        // Ultra-fast mapping - inline return for maximum speed
+        const mappedGoals = data?.map((item: UserGoal): Goal => ({
           id: item.id,
-          image: item.image || '', // Handle null/undefined images
-          description: item.description || '',
+          image: item.image,
+          description: item.description,
           why: item.why || undefined,
-          deadline: item.deadline || new Date().toISOString(),
+          deadline: item.deadline,
           createdAt: item.created_at,
-          achieved: item.achieved || false,
+          achieved: item.achieved,
           achievedAt: item.achieved_at || undefined,
-        }));
+        })) || [];
 
-        // Save goals to local storage for offline use (only if not too large)
+        // Save goals to local storage for offline use
         if (mappedGoals.length > 0) {
-          try {
-            saveGoalsToLocalStorage(mappedGoals, user.id);
-          } catch (storageError) {
-            console.warn('Failed to save to localStorage, continuing without offline cache:', storageError);
-          }
+          saveGoalsToLocalStorage(mappedGoals, user.id);
         }
 
         return mappedGoals;
@@ -98,8 +69,9 @@ export const useOptimizedGoals = () => {
     },
     // Enable query immediately when user is available
     enabled: !!user,
-    // Mobile-optimized settings
-    staleTime: 30 * 1000, // 30 seconds to reduce mobile data usage
-    refetchInterval: false, // Disable automatic refetch to save battery/data
+    // Use shorter stale time for goals to ensure fresh data
+    staleTime: 10 * 1000, // 10 seconds
+    // Enable background refetch for better UX
+    refetchInterval: isOnline ? 30 * 1000 : false, // Refetch every 30 seconds when online
   });
 };
