@@ -76,11 +76,11 @@ const OptimizedGoalCard = memo<OptimizedGoalCardProps>(({ goal, onClick, index }
           }`}
           onError={handleImageError}
           onLoad={handleImageLoad}
-          loading={index < 8 ? "eager" : "lazy"}
+          loading={index < 4 ? "eager" : "lazy"}
           decoding="async"
           width="400"
           height="300"
-          fetchPriority={index < 4 ? "high" : "low"}
+          fetchPriority={index < 2 ? "high" : "low"}
         />
         {goal.achieved && (
           <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">

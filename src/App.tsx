@@ -16,22 +16,22 @@ import NPSAnalytics from "./pages/NPSAnalytics";
 import OptimizedIndex from "./pages/OptimizedIndex";
 import Wins from "./pages/Wins";
 
-// Maximum performance React Query configuration for sub-second loading with offline support
+// Ultra-fast React Query configuration optimized for mobile performance
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 30 * 1000, // 30 seconds - faster invalidation for real-time updates
-      gcTime: 10 * 60 * 1000, // 10 minutes cache retention
+      staleTime: 2 * 60 * 1000, // 2 minutes - prevent unnecessary refetches
+      gcTime: 30 * 60 * 1000, // 30 minutes cache retention for offline
       refetchOnWindowFocus: false,
-      refetchOnMount: 'always', // Always refetch to ensure latest data
+      refetchOnMount: false, // Use cache first for instant loads
       refetchOnReconnect: true,
-      retry: 2, // Allow retries for reliability
-      retryDelay: 500,
-      networkMode: 'online', // Only fetch when online for better error handling
+      retry: 1, // Single retry for speed
+      retryDelay: 200, // Fast retry
+      networkMode: 'online',
     },
     mutations: {
-      retry: 2,
-      retryDelay: 500,
+      retry: 1,
+      retryDelay: 200,
       networkMode: 'online',
     },
   },

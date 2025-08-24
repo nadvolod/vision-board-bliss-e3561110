@@ -69,9 +69,8 @@ export const useOptimizedGoals = () => {
     },
     // Enable query immediately when user is available
     enabled: !!user,
-    // Use shorter stale time for goals to ensure fresh data
-    staleTime: 10 * 1000, // 10 seconds
-    // Enable background refetch for better UX
-    refetchInterval: isOnline ? 30 * 1000 : false, // Refetch every 30 seconds when online
+    // Mobile-optimized settings
+    staleTime: 30 * 1000, // 30 seconds to reduce mobile data usage
+    refetchInterval: false, // Disable automatic refetch to save battery/data
   });
 };
