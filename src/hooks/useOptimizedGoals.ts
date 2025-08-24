@@ -29,8 +29,7 @@ export const useOptimizedGoals = () => {
           .from('user_goals')
           .select('id, image, description, why, deadline, created_at, achieved, achieved_at')
           .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(50); // Increased limit to ensure we have all goals for offline use
+          .order('created_at', { ascending: false }); // Remove limit to get ALL goals
 
         if (error) {
           throw error;
@@ -70,7 +69,9 @@ export const useOptimizedGoals = () => {
     },
     // Enable query immediately when user is available
     enabled: !!user,
-    // Use default settings from QueryClient for consistent behavior
-    // This ensures cached data is used immediately for faster loads
+    // Use shorter stale time for goals to ensure fresh data
+    staleTime: 10 * 1000, // 10 seconds
+    // Enable background refetch for better UX
+    refetchInterval: isOnline ? 30 * 1000 : false, // Refetch every 30 seconds when online
   });
 };

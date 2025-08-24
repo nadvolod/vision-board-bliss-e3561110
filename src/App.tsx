@@ -20,21 +20,19 @@ import Wins from "./pages/Wins";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes - use cache immediately for faster loads
-      gcTime: 60 * 60 * 1000, // 1 hour cache retention
+      staleTime: 30 * 1000, // 30 seconds - faster invalidation for real-time updates
+      gcTime: 10 * 60 * 1000, // 10 minutes cache retention
       refetchOnWindowFocus: false,
-      refetchOnMount: false, // Don't refetch on mount to use cached data immediately
-      refetchOnReconnect: true, // Only refetch when reconnecting
-      retry: 0, // No retries for absolute maximum speed
-      retryDelay: 0,
-      // Enable offline support - queries will work even when offline
-      networkMode: 'always',
+      refetchOnMount: 'always', // Always refetch to ensure latest data
+      refetchOnReconnect: true,
+      retry: 2, // Allow retries for reliability
+      retryDelay: 500,
+      networkMode: 'online', // Only fetch when online for better error handling
     },
     mutations: {
-      retry: 1,
-      retryDelay: 100, // Very fast mutation retry
-      // Enable offline support for mutations
-      networkMode: 'always',
+      retry: 2,
+      retryDelay: 500,
+      networkMode: 'online',
     },
   },
 });

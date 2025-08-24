@@ -46,7 +46,7 @@ export const OptimizedGoalProvider: React.FC<{ children: ReactNode }> = ({ child
   const isOnline = useOnlineStatus();
 
   const invalidateQueries = () => {
-    queryClient.invalidateQueries({ queryKey: ['goals', user?.id, isOnline] });
+    queryClient.invalidateQueries({ queryKey: ['goals', user?.id] });
   };
 
   const addGoalMutation = useMutation({
